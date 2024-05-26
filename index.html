@@ -130,7 +130,20 @@
                     <h5 class="card-title">Precio: 270€</h5>
                     <p class="card-text">Esta baratito apuntate. <br>
                         (ES UNA ORDEN, son 54 kebabs)</p>
-                    <a href="#formulario.html" class="btn btn-primary">Formulario</a>
+                        <button type="button" class="btn btn-primary" id="liveToastBtn">Show live toast</button>
+                        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                          <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="toast-header">
+                              <img src="..." class="rounded me-2" alt="...">
+                              <strong class="me-auto">Bootstrap</strong>
+                              <small>11 mins ago</small>
+                              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            <div class="toast-body">
+                              Hello, world! This is a toast message.
+                            </div>
+                          </div>
+                        </div>
                 </div>
             </div>
         </div>
@@ -168,18 +181,18 @@
         <div class="col-5 col-lg-3 mx-3 mt-1 mb-1">
             <div class="card" style="width: 18rem; height: 10rem;">
                 <div class="card-body">
-                    <h6 class="card-title">Jose Francisco Lozano Barrera <br> <em>1 year ago</em></h6>
+                    <h6 class="card-title">Daniel Galan <br> <em>1 year ago</em></h6>
                     <h6 class="card-subtitle mb-2 mt-2 text-body-secondary"><span
                             class="badge text-bg-success">Experiencia fantástica</span>
                     </h6>
-                    <p class="card-text">Estupendo gym y buen ambiente.</p>
+                    <p class="card-text">Me he desgarrado el biceps.</p>
                 </div>
             </div>
         </div>
         <div class="col-5 col-lg-3 mx-3 mt-1 mb-1">
             <div class="card" style="width: 18rem; height: 10rem;">
                 <div class="card-body">
-                    <h6 class="card-title">Roberto Sanchez Lopez <br> <em>3 year ago</em></h6>
+                    <h6 class="card-title">David Catalan <br> <em>3 year ago</em></h6>
                     <h6 class="card-subtitle mb-2 mt-2 text-body-secondary"><span
                             class="badge text-bg-success">Experiencia fantástica</span>
                     </h6>
@@ -190,11 +203,11 @@
         <div class="col-5 col-lg-3 mx-3 mt-1 mb-1">
             <div class="card" style="width: 18rem; height: 10rem;">
                 <div class="card-body">
-                    <h6 class="card-title">Javier García <br> <em>5 year ago</em></h6>
+                    <h6 class="card-title">Manolo Gonzalez <br> <em>5 year ago</em></h6>
                     <h6 class="card-subtitle mb-2 mt-2 text-body-secondary"><span
                             class="badge text-bg-success">Experiencia fantástica</span>
                     </h6>
-                    <p class="card-text"> Muy, bien.</p>
+                    <p class="card-text"> Muy, bien. (No he entrado en mi vida a ese gimnasio)</p>
                 </div>
             </div>
         </div>
@@ -248,5 +261,15 @@
     </body>
     <script src="bootstrap-5.3.2-dist/js/bootstrap.bundle.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
+    
+<script>const toastTrigger = document.getElementById('liveToastBtn')
+const toastLiveExample = document.getElementById('liveToast')
 
+if (toastTrigger) {
+  const toastBootstrap = bootstrap.Toast.getOrCreateInstance(toastLiveExample)
+  toastTrigger.addEventListener('click', () => {
+    toastBootstrap.show()
+  })
+}
+</script>
 </html>
