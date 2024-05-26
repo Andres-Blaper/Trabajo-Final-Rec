@@ -2,3 +2,7 @@ div.footer{
     background-color: black;
     color: white;
 }
+
+body{
+    max-width: 1800px;
+}
