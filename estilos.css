@@ -3,8 +3,8 @@ div.footer{
     color: white;
 }
 
-body{
-    max-width: 1800px;
+.contenedor{
+    min-width: 100%;
 }
 
 div.Copy{
