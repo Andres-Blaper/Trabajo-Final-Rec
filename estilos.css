@@ -3,10 +3,14 @@ div.footer{
     color: white;
 }
 
-body{
-    max-width: 1800px;
+.contenedor{
+    min-width: 100%;
 }
 
 div.Copy{
     margin-top: 10px;
+}
+
+p.card-text{
+    font-size: 13px;
 }
