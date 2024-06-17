@@ -14,3 +14,7 @@ div.Copy{
 p.card-text{
     font-size: 13px;
 }
+
+.conte{
+    --bs-gutter-x: 0rem;
+}
