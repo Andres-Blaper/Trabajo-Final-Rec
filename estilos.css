@@ -22,3 +22,12 @@ p.card-text{
 .conte{
     --bs-gutter-x: 0rem;
 }
+
+.navbar {
+    background-color: #343a40; /* Fondo oscuro */
+    border-bottom: 2px solid #6a11cb; /* Borde morado */
+}
+
+.accordion {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
