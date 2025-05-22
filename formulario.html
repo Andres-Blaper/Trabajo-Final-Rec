@@ -1,27 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar Sesión</title>
+    <link rel="icon" type="image/png" href="peso.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
-            background-color: #a116fd;
+            background: linear-gradient(270deg, #a116fd, #6a11cb, #f7971e, #a116fd, #6a11cb, #f7971e, #a116fd);
+            background-size: 400% 400%;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            animation: gradientMove 7s ease-in-out infinite alternate;
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: -120px;
+            left: -120px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle at 40% 40%, #fff2 0%, transparent 70%);
+            z-index: 0;
         }
 
         .container {
+            position: relative;
+            z-index: 1;
             background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 8px 32px rgba(161, 22, 253, 0.15);
+        }
+
+        .btn-purple {
+            background: #a116fd;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-purple:hover {
+            background: #6a11cb;
+            color: #fff;
         }
 
         input:focus {
-            border-color: #6a11cb;
-            box-shadow: 0 0 5px rgba(106, 17, 203, 0.5);
+            border-color: #a116fd;
+            box-shadow: 0 0 8px #a116fd33;
+            transition: box-shadow 0.2s;
+        }
+
+        /* Animación para el formulario */
+        .form-animate {
+            opacity: 0;
+            transform: translateY(80px) scale(0.98);
+            transition: opacity 0.8s cubic-bezier(.4, 0, .2, 1), transform 0.8s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .form-animate.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Animación en el icono */
+        .bi-person-circle {
+            transition: transform 0.4s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .bi-person-circle:hover {
+            transform: rotate(-10deg) scale(1.15);
+        }
+
+        @keyframes icon-pop {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) rotate(-30deg);
+            }
+
+            80% {
+                opacity: 1;
+                transform: scale(1.15) rotate(10deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .bi-person-circle.animated {
+            animation: icon-pop 1s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        @keyframes icon-flip {
+            0% {
+                filter: drop-shadow(0 0 0 #a116fd);
+                color: #a116fd;
+                transform: rotateY(0deg) scale(1);
+            }
+
+            40% {
+                filter: drop-shadow(0 0 12px #f7971e);
+                color: #f7971e;
+                transform: rotateY(180deg) scale(1.2);
+            }
+
+            60% {
+                filter: drop-shadow(0 0 8px #6a11cb);
+                color: #6a11cb;
+                transform: rotateY(200deg) scale(1.1);
+            }
+
+            100% {
+                filter: drop-shadow(0 0 0 #a116fd);
+                color: #a116fd;
+                transform: rotateY(360deg) scale(1);
+            }
+        }
+
+        .bi-person-circle.flipping {
+            animation: icon-flip 0.8s cubic-bezier(.4, 0, .2, 1);
+            backface-visibility: hidden;
+            /* Para suavizar el giro */
+            perspective: 400px;
         }
     </style>
 </head>
@@ -29,27 +145,54 @@
 <body>
     <div class="container mt-5">
         <div class="row justify-content-center">
-            <div class="col-md-4">
-                <h3 class="text-center mb-4">Iniciar Sesión</h3>
+            <div class="col-md-4 form-animate" id="loginForm">
+                <h3 class="text-center mb-4">
+                    <i class="bi bi-person-circle" id="iconoLogin" style="font-size:2.5rem; color:#a116fd; cursor:pointer; transition:color 0.2s;"></i><br>
+                    Iniciar Sesión
+                </h3>
                 <form action="formulario2.php" method="post">
                     <div class="mb-3 input-group">
                         <span class="input-group-text"><i class="bi bi-person"></i></span>
-                        <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ingresa tu nombre" required>
+                        <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ingresa tu nombre"
+                            required>
                     </div>
                     <div class="mb-3 input-group">
                         <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                        <input type="password" class="form-control" name="contraseña" id="contraseña" placeholder="Ingresa tu contraseña"
-                            required>
+                        <input type="password" class="form-control" name="contraseña" id="contraseña"
+                            placeholder="Ingresa tu contraseña" required>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+                    <button type="submit" class="btn btn-purple w-100">Iniciar Sesión</button>
                     <div class="text-center mt-3">
-                        <a href="index.html" class="btn btn-link text-decoration-none">Volver a pagina principal</a>
+                        <a href="index.html" class="btn btn-link text-decoration-none">Volver a página principal</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('loginForm').classList.add('visible');
+            var icon = document.getElementById('iconoLogin');
+            // Animación al cargar la página
+            icon.classList.add('animated');
+            icon.addEventListener('animationend', function() {
+                icon.classList.remove('animated');
+            });
+            // Animación de giro tipo moneda al hacer clic
+            icon.addEventListener('click', function() {
+                icon.classList.remove('flipping'); // Reinicia si ya está animado
+                void icon.offsetWidth; // Fuerza reflow para reiniciar animación
+                icon.classList.add('flipping');
+            });
+            // Elimina la clase flipping al terminar la animación
+            icon.addEventListener('animationend', function(e) {
+                if (e.animationName === "icon-flip") {
+                    icon.classList.remove('flipping');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

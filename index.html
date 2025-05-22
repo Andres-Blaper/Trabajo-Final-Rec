@@ -13,6 +13,114 @@
     <link rel="stylesheet" href="css/bootstrap.css">
     <link rel="icon" href="peso.png" type="img/x-icon" class="peso">
     <title>Factor Fitness</title>
+    <style>
+        body {
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+
+        .navbar,
+        .footer {
+            background: #7c3aed !important;
+            color: #fff !important;
+        }
+
+        .navbar .nav-link,
+        .footer h5,
+        .footer h2,
+        .footer p,
+        .footer a {
+            color: #fff !important;
+        }
+
+        .btn-morado,
+        .btn-morado:focus {
+            background: #a116fd;
+            color: #fff;
+            border: none;
+        }
+
+        .btn-morado:hover {
+            background: #6a11cb;
+            color: #fff;
+        }
+
+        .card {
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(161, 22, 253, 0.08);
+            border: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 16px 40px rgba(161, 22, 253, 0.13);
+        }
+
+        .card-header {
+            background: #7c3aed;
+            color: #fff;
+            border-radius: 1.5rem 1.5rem 0 0;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        h1,
+        h2,
+        h5 {
+            text-shadow: 0 2px 8px #a116fd22;
+        }
+
+        .accordion-button {
+            background: #7c3aed;
+            color: #fff;
+            font-weight: bold;
+            border-radius: 1.2rem 1.2rem 0 0;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background: #a116fd;
+            color: #fff;
+            box-shadow: none;
+        }
+
+        .accordion-item {
+            border-radius: 1.2rem;
+            margin-bottom: 10px;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(161, 22, 253, 0.07);
+        }
+
+        .accordion-body {
+            background: #fff;
+            color: #222;
+            border-radius: 0 0 1.2rem 1.2rem;
+        }
+
+        /* Agranda los enlaces del navbar al hacer hover */
+        .navbar .nav-link {
+            transition: transform 0.18s cubic-bezier(.4, 0, .2, 1), color 0.18s;
+        }
+
+        .navbar .nav-link:hover,
+        .navbar .nav-link:focus {
+            transform: scale(1.13);
+            color: #f5f6fa !important;
+            text-shadow: 0 2px 8px #a116fd33;
+        }
+
+        /* Solo animación para los iconos de redes sociales */
+        .icono {
+            transition: transform 0.2s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .icono:hover {
+            transform: scale(1.18) rotate(-8deg);
+        }
+    </style>
 </head>
 
 <body>
@@ -116,11 +224,9 @@
                             <h5 class="card-title">Precio: 30€</h5>
                             <p class="card-text">Esta baratito apuntate. <br>
                                 (ES UNA ORDEN, son 6 kebabs)</p>
-
-                            <button type="button" class="btn btn-primary" id="liveToastBtn">Formulario</button>
-
+                            <button type="button" class="btn btn-morado" data-bs-toggle="toast" data-bs-target="#toastMensual">Formulario</button>
                             <div class="toast-container position-fixed bottom-0 end-0 p-3">
-                                <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div id="toastMensual" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                                     <div class="toast-header">
                                         <img src="OIP.jpeg" class="rounded me-2" height="30px" alt="...">
                                         <strong class="me-auto">Alerta</strong>
@@ -143,13 +249,11 @@
                             <h5 class="card-title">Precio: 70€</h5>
                             <p class="card-text">Esta baratito apuntate. <br>
                                 (ES UNA ORDEN, son 14 kebabs)</p>
-
-                            <button type="button" class="btn btn-primary" id="liveToastBtn">Formulario</button>
-
+                            <button type="button" class="btn btn-morado" data-bs-toggle="toast" data-bs-target="#toastTrimestral">Formulario</button>
                             <div class="toast-container position-fixed bottom-0 end-0 p-3">
-                                <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div id="toastTrimestral" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                                     <div class="toast-header">
-                                        <img src="..." class="rounded me-2" alt="...">
+                                        <img src="OIP.jpeg" class="rounded me-2" height="30px" alt="...">
                                         <strong class="me-auto">Alerta</strong>
                                         <small>1 mins ago</small>
                                         <button type="button" class="btn-close" data-bs-dismiss="toast"
@@ -170,13 +274,11 @@
                             <h5 class="card-title">Precio: 270€</h5>
                             <p class="card-text">Esta baratito apuntate. <br>
                                 (ES UNA ORDEN, son 54 kebabs)</p>
-
-                            <button type="button" class="btn btn-primary" id="liveToastBtn1">Formulario</button>
-
+                            <button type="button" class="btn btn-morado" data-bs-toggle="toast" data-bs-target="#toastAnual">Formulario</button>
                             <div class="toast-container position-fixed bottom-0 end-0 p-3">
-                                <div id="liveToast1" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div id="toastAnual" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                                     <div class="toast-header">
-                                        <img src="..." class="rounded me-2" alt="...">
+                                        <img src="OIP.jpeg" class="rounded me-2" height="30px" alt="...">
                                         <strong class="me-auto">Alerta</strong>
                                         <small>1 mins ago</small>
                                         <button type="button" class="btn-close" data-bs-dismiss="toast"
@@ -441,6 +543,19 @@
 
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap.js.snippets.js"></script>
+    <script>
+        // Inicializa todos los toasts al hacer clic en cualquier botón con data-bs-toggle="toast"
+        document.querySelectorAll('[data-bs-toggle="toast"]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var target = btn.getAttribute('data-bs-target');
+                var toastEl = document.querySelector(target);
+                if (toastEl) {
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
