@@ -57,11 +57,12 @@ if ($fila) {
 
     if ($fila_monitor) {
         $_SESSION['Nombre'] = $Nombre;
-        header('Location: monitor-dashboard.php'); // Redirigir a otra página si es monitor
+        header('Location: menu-monitor.php'); // Redirigir a otra página si es monitor
         exit();
     } else {
-        echo "<p>No se encuentra el usuario '$Nombre' con la contraseña proporcionada.</p>";
-        echo "<p><a href='formulario.html'>Volver a formulario</a></p>";
+        // Redirigir a formulario.html con error y el nombre
+        header('Location: formulario.html?error=' . urlencode($Nombre));
+        exit();
     }
 }
 ?>
