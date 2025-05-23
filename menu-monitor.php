@@ -35,6 +35,7 @@ $num_inscripciones = $res_inscripciones ? $res_inscripciones->fetch_assoc()['tot
     <meta charset="UTF-8">
     <title>Panel Monitor</title>
     <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="icon" type="image/png" href="peso.png">
     <style>
         body {
             background: #f5f6fa;
@@ -128,9 +129,9 @@ $num_inscripciones = $res_inscripciones ? $res_inscripciones->fetch_assoc()['tot
                 Bienvenido, <?php echo htmlspecialchars($nombre_monitor); ?>
             </div>
             <nav class="nav flex-column w-100 mb-4">
-                <a class="nav-link" href="monitor-clases.php">Clases</a>
-                <a class="nav-link" href="monitor-usuarios.php">Usuarios</a>
-                <a class="nav-link" href="monitor-registros.php">Registros</a>
+                <a class="nav-link" href="clases-monitor.php">Clases</a>
+                <a class="nav-link" href="usuarios-monitor.php">Usuarios</a>
+                <a class="nav-link" href="registros-monitor.php">Registros</a>
             </nav>
             <a href="cerrarsesion.php" class="btn btn-light text-dark logout-btn mt-auto">Cerrar sesión</a>
         </div>

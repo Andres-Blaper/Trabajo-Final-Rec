@@ -57,6 +57,7 @@ if ($fila) {
 
     if ($fila_monitor) {
         $_SESSION['Nombre'] = $Nombre;
+        $_SESSION['Id_monitor'] = $fila_monitor['Id_monitor']; // <-- Esto es para guardar el id del monitor  en una sesión
         header('Location: menu-monitor.php'); // Redirigir a otra página si es monitor
         exit();
     } else {
