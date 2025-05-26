@@ -105,18 +105,22 @@ $next_id = $row_next_id ? $row_next_id['AUTO_INCREMENT'] : '';
         <?php echo $mensaje; ?>
     </div>
     <script>
-document.getElementById('nombre').addEventListener('input', generarCorreo);
-document.getElementById('apellido').addEventListener('input', generarCorreo);
+function quitarTildes(texto) {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
 
 function generarCorreo() {
-    let nombre = document.getElementById('nombre').value.trim().toLowerCase().replace(/\s+/g, '');
-    let apellido = document.getElementById('apellido').value.trim().toLowerCase().replace(/\s+/g, '');
+    let nombre = quitarTildes(document.getElementById('nombre').value.trim().toLowerCase().replace(/\s+/g, ''));
+    let apellido = quitarTildes(document.getElementById('apellido').value.trim().toLowerCase().replace(/\s+/g, ''));
     if(nombre && apellido) {
-        document.getElementById('correo').value = nombre + '.' + apellido + '@gmail.com';
+        document.getElementById('correo').value = nombre + '.' + apellido + '@email.com';
     } else {
         document.getElementById('correo').value = '';
     }
 }
+
+document.getElementById('nombre').addEventListener('input', generarCorreo);
+document.getElementById('apellido').addEventListener('input', generarCorreo);
 </script>
 </body>
 </html>
