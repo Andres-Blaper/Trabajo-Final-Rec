@@ -149,6 +149,7 @@ if (isset($_GET['mensaje'])) {
                 <?php else: ?>
                     <!-- Si el usuario está inscrito en alguna clase, mostramos la tabla -->
                     <p class="text-center">Estás inscrito en las siguientes clases:</p>
+                    <div class="table-responsive">
                     <table class="table table-striped table-bordered">
                         <thead class="table-dark">
                             <tr>
@@ -176,6 +177,7 @@ if (isset($_GET['mensaje'])) {
                             <?php endforeach; // Fin del foreach ?>
                         </tbody>
                     </table>
+                    </div>
                 <?php endif; ?>
             </div>
             <div class="card-footer text-center">

@@ -26,6 +26,7 @@ while ($fila = $result->fetch_assoc()) {
     <title>Usuarios Existentes</title>
     <link rel="icon" href="peso.png" type="img/x-icon" class="peso">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         .bg-purple { background: #7c3aed !important; color: #fff !important; }
         .btn-purple { background: #7c3aed; color: #fff; border: none; }
@@ -74,36 +75,42 @@ while ($fila = $result->fetch_assoc()) {
             </div>
             <div class="card-body">
                 <p class="text-center">Estos son los usuarios existentes:</p>
-                <table class="table table-striped table-bordered">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col">ID de Usuario</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Apellido</th>
-                            <th scope="col">Contraseña</th>
-                            <th scope="col">Correo</th>
-                            <th scope="col">Eliminar</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($usuarios as $usuario): ?>
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" id="buscadorUsuarios" placeholder="Buscar usuario...">
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" id="tablaUsuarios">
+                        <thead class="table-dark">
                             <tr>
-                                <td><?php echo htmlspecialchars($usuario['Id_usuario']); ?></td>
-                                <td><?php echo htmlspecialchars($usuario['Nombre']); ?></td>
-                                <td><?php echo htmlspecialchars($usuario['Apellido']); ?></td>
-                                <td><?php echo htmlspecialchars($usuario['Contraseña']); ?></td>
-                                <td><?php echo htmlspecialchars($usuario['Correo']); ?></td>
-                                <td>
-                                    <a href="eliminar-usuario-definitivo.php?Id_usuario=<?php echo $usuario['Id_usuario']; ?>"
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">
-                                       Eliminar
-                                    </a>
-                                </td>
+                                <th scope="col">ID de Usuario</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Apellido</th>
+                                <th scope="col">Contraseña</th>
+                                <th scope="col">Correo</th>
+                                <th scope="col">Eliminar</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($usuarios as $usuario): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($usuario['Id_usuario']); ?></td>
+                                    <td><?php echo htmlspecialchars($usuario['Nombre']); ?></td>
+                                    <td><?php echo htmlspecialchars($usuario['Apellido']); ?></td>
+                                    <td><?php echo htmlspecialchars($usuario['Contraseña']); ?></td>
+                                    <td><?php echo htmlspecialchars($usuario['Correo']); ?></td>
+                                    <td>
+                                        <a href="eliminar-usuario-definitivo.php?Id_usuario=<?php echo $usuario['Id_usuario']; ?>"
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">
+                                           Eliminar
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="card-footer text-center">
                 <a href="crear-usuario-monitor.php" class="btn btn-purple">Crear Usuario</a>
@@ -121,6 +128,15 @@ while ($fila = $result->fetch_assoc()) {
                 var toast = new bootstrap.Toast(toastEl);
                 toast.show();
             }
+        });
+
+        document.getElementById('buscadorUsuarios').addEventListener('input', function() {
+            let filtro = this.value.toLowerCase();
+            let filas = document.querySelectorAll('#tablaUsuarios tbody tr');
+            filas.forEach(function(fila) {
+                let texto = fila.textContent.toLowerCase();
+                fila.style.display = texto.includes(filtro) ? '' : 'none';
+            });
         });
     </script>
 </body>
