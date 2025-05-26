@@ -101,7 +101,7 @@ if (isset($_GET['mensaje'])) {
 
     <!-- Contenedor para los mensajes toast (notificaciones flotantes) -->
     <div aria-live="polite" aria-atomic="true" class="position-relative">
-        <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
             <?php if (isset($_GET['mensaje'])): ?>
                 <div class="toast align-items-center <?php echo $toastClass; ?>" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000" id="mainToast">
                     <div class="d-flex">

@@ -35,6 +35,38 @@ while ($fila = $result->fetch_assoc()) {
     </style>
 </head>
 <body class="bg-light">
+    <!-- Contenedor para los mensajes toast (notificaciones flotantes) -->
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+        <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+            <?php
+            $toastClass = '';
+            $toastMsg = '';
+            if (isset($_GET['mensaje'])) {
+                $toastClass = 'bg-primary text-white';
+                if ($_GET['mensaje'] === 'usuario_eliminado') {
+                    $toastClass = 'bg-danger text-white';
+                    $toastMsg = 'Usuario eliminado correctamente.';
+                } elseif ($_GET['mensaje'] === 'usuario_creado') {
+                    $toastClass = 'bg-purple text-white';
+                    $toastMsg = 'Usuario creado correctamente.';
+                } elseif ($_GET['mensaje'] === 'error') {
+                    $toastClass = 'bg-danger text-white';
+                    $toastMsg = 'Ocurrió un error al procesar la solicitud.';
+                }
+            }
+            ?>
+            <?php if (isset($_GET['mensaje'])): ?>
+                <div class="toast align-items-center <?php echo $toastClass; ?>" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000" id="mainToast">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <?php echo $toastMsg; ?>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
     <div class="container mt-5">
         <div class="card shadow rounded-4">
             <div class="card-header bg-purple">
@@ -80,5 +112,16 @@ while ($fila = $result->fetch_assoc()) {
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            var toastEl = document.getElementById('mainToast');
+            if (toastEl) {
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+        });
+    </script>
 </body>
 </html>
