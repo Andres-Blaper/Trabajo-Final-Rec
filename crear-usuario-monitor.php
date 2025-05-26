@@ -1,19 +1,14 @@
 <?php
-session_start();
 require 'conexion.php';
-
-// Solo permite acceso a monitores autenticados
-if (!isset($_SESSION['Id_monitor'])) {
-    header('Location: formulario.html');
-    exit();
-}
+session_start();
 
 $mensaje = '';
+$toast = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre']);
     $apellido = trim($_POST['apellido']);
-    $contrasena = trim($_POST['contrasena']);
     $correo = trim($_POST['correo']);
+    $contrasena = trim($_POST['contrasena']);
 
     // Comprobar si ya existe un usuario con ese correo
     $sql_check = "SELECT COUNT(*) as total FROM usuarios WHERE Correo = ?";
@@ -32,23 +27,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $row_check_nombre = $result_check_nombre->fetch_assoc();
 
     if ($row_check['total'] > 0) {
-        $mensaje = '<div class="alert alert-warning mt-3">Ya existe un usuario con ese correo.</div>';
+        $toast = true;
+        $toastClass = 'bg-danger text-white';
+        $toastMsg = 'Ya existe un usuario con ese correo.';
     } elseif ($row_check_nombre['total'] > 0) {
-        $mensaje = '<div class="alert alert-warning mt-3">Ya existe un usuario con ese nombre y apellido.</div>';
+        $toast = true;
+        $toastClass = 'bg-danger text-white';
+        $toastMsg = 'Ya existe un usuario con ese nombre y apellido.';
     } elseif ($nombre && $apellido && $contrasena && $correo) {
         $sql = "INSERT INTO usuarios (Nombre, Apellido, Contraseña, Correo) VALUES (?, ?, ?, ?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("ssss", $nombre, $apellido, $contrasena, $correo);
         if ($stmt->execute()) {
-            $mensaje = '<div class="alert alert-success mt-3">Usuario creado correctamente.</div>';
+            $toast = true;
+            $toastClass = 'bg-success text-white';
+            $toastMsg = 'Usuario creado correctamente.';
         } else {
-            $mensaje = '<div class="alert alert-danger mt-3">Error al crear el usuario.</div>';
+            $toast = true;
+            $toastClass = 'bg-danger text-white';
+            $toastMsg = 'Error al crear el usuario.';
         }
     } else {
-        $mensaje = '<div class="alert alert-warning mt-3">Rellena todos los campos correctamente.</div>';
+        $toast = true;
+        $toastClass = 'bg-danger text-white';
+        $toastMsg = 'Rellena todos los campos correctamente.';
     }
 }
 
+// Obtener el próximo ID autoincremental
 $sql_next_id = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'gimnasio' AND TABLE_NAME = 'usuarios'";
 $result_next_id = $mysqli->query($sql_next_id);
 $row_next_id = $result_next_id->fetch_assoc();
@@ -76,6 +82,28 @@ $next_id = $row_next_id ? $row_next_id['AUTO_INCREMENT'] : '';
     </style>
 </head>
 <body>
+    <?php if ($toast): ?>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+            <div id="mainToast" class="toast align-items-center <?php echo $toastClass; ?>" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <?php echo $toastMsg; ?>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                var toastEl = document.getElementById('mainToast');
+                if (toastEl) {
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }
+            });
+        </script>
+    <?php endif; ?>
     <div class="form-container card shadow p-4 rounded-4">
         <h2 class="mb-4 text-center">Crear Nuevo Usuario</h2>
         <form method="POST">
@@ -93,7 +121,7 @@ $next_id = $row_next_id ? $row_next_id['AUTO_INCREMENT'] : '';
             </div>
             <div class="mb-3">
                 <label for="correo" class="form-label">Correo</label>
-                <input type="email" class="form-control" id="correo" name="correo" readonly placeholder="nombre.apellido@gmail.com">
+                <input type="email" class="form-control" id="correo" name="correo" readonly placeholder="nombre.apellido@email.com">
             </div>
             <div class="mb-3">
                 <label for="contrasena" class="form-label">Contraseña</label>
@@ -102,13 +130,11 @@ $next_id = $row_next_id ? $row_next_id['AUTO_INCREMENT'] : '';
             <button type="submit" class="btn btn-purple w-100">Crear Usuario</button>
             <a href="usuarios-monitor.php" class="btn btn-secondary w-100 mt-2">Volver</a>
         </form>
-        <?php echo $mensaje; ?>
     </div>
     <script>
 function quitarTildes(texto) {
     return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
-
 function generarCorreo() {
     let nombre = quitarTildes(document.getElementById('nombre').value.trim().toLowerCase().replace(/\s+/g, ''));
     let apellido = quitarTildes(document.getElementById('apellido').value.trim().toLowerCase().replace(/\s+/g, ''));
@@ -118,7 +144,6 @@ function generarCorreo() {
         document.getElementById('correo').value = '';
     }
 }
-
 document.getElementById('nombre').addEventListener('input', generarCorreo);
 document.getElementById('apellido').addEventListener('input', generarCorreo);
 </script>

@@ -9,6 +9,7 @@ if (!isset($_SESSION['Id_monitor'])) {
 }
 
 $mensaje = '';
+$toast = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre']);
     $capacidad = intval($_POST['capacidad']);
@@ -23,18 +24,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $row_check = $result_check->fetch_assoc();
 
     if ($row_check['total'] > 0) {
-        $mensaje = '<div class="alert alert-warning mt-3">Ya existe una clase con ese nombre.</div>';
+        $toast = true;
+        $toastClass = 'bg-danger text-white';
+        $toastMsg = 'Ya existe una clase con ese nombre.';
     } elseif ($nombre && $capacidad >= 1 && $capacidad <= 20 && $id_monitor > 0) {
         $sql = "INSERT INTO clases (Nombre_clase, Capacidad_clase, Id_monitor) VALUES (?, ?, ?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("sii", $nombre, $capacidad, $id_monitor);
         if ($stmt->execute()) {
-            $mensaje = '<div class="alert alert-success mt-3">Clase creada correctamente.</div>';
+            $toast = true;
+            $toastClass = 'bg-success text-white';
+            $toastMsg = 'Clase creada correctamente.';
         } else {
-            $mensaje = '<div class="alert alert-danger mt-3">Error al crear la clase.</div>';
+            $toast = true;
+            $toastClass = 'bg-danger text-white';
+            $toastMsg = 'Error al crear la clase.';
         }
     } else {
-        $mensaje = '<div class="alert alert-warning mt-3">Rellena todos los campos correctamente.</div>';
+        $toast = true;
+        $toastClass = 'bg-danger text-white';
+        $toastMsg = 'Rellena todos los campos correctamente.';
     }
 }
 ?>
@@ -60,6 +69,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
+    <?php if ($toast): ?>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+            <div id="mainToast" class="toast align-items-center <?php echo $toastClass; ?>" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <?php echo $toastMsg; ?>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                var toastEl = document.getElementById('mainToast');
+                if (toastEl) {
+                    var toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }
+            });
+        </script>
+    <?php endif; ?>
     <div class="form-container card shadow p-4 rounded-4">
         <h2 class="mb-4 text-center">Crear Nueva Clase</h2>
         <form method="POST">
@@ -78,7 +109,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn btn-purple w-100">Crear Clase</button>
             <a href="clases-monitor.php" class="btn btn-secondary w-100 mt-2">Volver</a>
         </form>
-        <?php echo $mensaje; ?>
     </div>
 </body>
 </html>
