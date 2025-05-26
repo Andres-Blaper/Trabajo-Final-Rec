@@ -178,6 +178,34 @@ if (isset($_GET['mensaje'])) {
                 var toast = new bootstrap.Toast(toastEl);
                 toast.show();
             }
+
+            // Ordenar tabla al hacer clic en los th
+            document.querySelectorAll('.table thead th').forEach(function(th, colIndex) {
+                th.style.cursor = 'pointer';
+                th.addEventListener('click', function() {
+                    let table = th.closest('table');
+                    let tbody = table.querySelector('tbody');
+                    let rows = Array.from(tbody.querySelectorAll('tr'));
+                    let asc = th.dataset.asc === 'true' ? false : true;
+                    rows.sort(function(a, b) {
+                        let aText = a.children[colIndex].textContent.trim();
+                        let bText = b.children[colIndex].textContent.trim();
+                        // Si es número, compara como número
+                        if (!isNaN(aText) && !isNaN(bText)) {
+                            return asc ? aText - bText : bText - aText;
+                        }
+                        // Si es texto, compara como texto
+                        return asc ? aText.localeCompare(bText) : bText.localeCompare(aText);
+                    });
+                    // Quita el orden de los demás th
+                    table.querySelectorAll('th').forEach(t => t.removeAttribute('data-asc'));
+                    // Marca el th actual con el estado de orden
+                    th.setAttribute('data-asc', asc);
+                    // Reemplaza el tbody con las filas ordenadas
+                    tbody.innerHTML = '';
+                    rows.forEach(row => tbody.appendChild(row));
+                });
+            });
         });
     </script>
 </body>
