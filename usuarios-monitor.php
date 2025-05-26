@@ -24,6 +24,7 @@ while ($fila = $result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <title>Usuarios Existentes</title>
+    <link rel="icon" href="peso.png" type="img/x-icon" class="peso">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .bg-purple { background: #7c3aed !important; color: #fff !important; }
@@ -61,7 +62,7 @@ while ($fila = $result->fetch_assoc()) {
                                 <td><?php echo htmlspecialchars($usuario['Contraseña']); ?></td>
                                 <td><?php echo htmlspecialchars($usuario['Correo']); ?></td>
                                 <td>
-                                    <a href="eliminar-usuario.php?Id_usuario=<?php echo $usuario['Id_usuario']; ?>"
+                                    <a href="eliminar-usuario-definitivo.php?Id_usuario=<?php echo $usuario['Id_usuario']; ?>"
                                        class="btn btn-danger btn-sm"
                                        onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">
                                        Eliminar
