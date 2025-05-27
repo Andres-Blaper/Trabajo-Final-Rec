@@ -14,7 +14,7 @@ $Id_usuario = $_SESSION['Id_usuario'];
 require 'conexion.php'; // Incluimos la conexión a la base de datos
 
 // --- OBTENER LAS CLASES EN LAS QUE ESTÁ INSCRITO EL USUARIO ---
-// Consulta SQL para obtener las clases en las que el usuario está inscrito
+// Consulta SQL para obtener las clases en las que el usuario está inscrito, necesitamos unir entre las tablas 'clases' e 'inscripciones con un join para obtener los datos de la tabla inscripcion que tenga el id del usuario'
 $sql = "SELECT c.Id_clase, c.Nombre_clase, c.Capacidad_clase, c.Id_monitor
         FROM clases c
         INNER JOIN inscripciones i ON c.Id_clase = i.Id_clase
@@ -102,6 +102,7 @@ if (isset($_GET['mensaje'])) {
         background: radial-gradient(circle at 30% 30%, #7c3aed55 0%, transparent 70%);
         z-index: 0;
     }
+    /* Este selector aplica estilos solo a los elementos .container que son hijos directos de un <body> que tiene la clase bg-light. */
     body.bg-light > .container,
     body.bg-light > .position-relative {
         position: relative;
@@ -132,21 +133,26 @@ if (isset($_GET['mensaje'])) {
     <div class="container mt-5">
         <div class="card shadow rounded-4">
             <div class="card-header bg-purple">
-                <!-- Saludo personalizado con el nombre del usuario -->
+                <!-- Saludo personalizado con el nombre del usuario, los htmlspecialchars me lo recomendó chatgpt para evitar inyecciones, y hacer el código más seguro -->
                 <h1 class="text-center">Bienvenido, <?php echo htmlspecialchars($Nombre); ?></h1>
             </div>
             <div class="card-body">
-                <?php if ($Clases === null): ?>
-                    <!-- Si no existen clases en el sistema -->
+                <?php 
+                if ($Clases === null):
+                ?>
+                    <!-- Si no existen clases en el sistema, esto se ejecuta solo si $Clases es null (ni '', ni 0, ni false) gracias al === -->
                     <div class="alert alert-danger text-center" role="alert">
                         No existen clases actualmente.
                     </div>
-                <?php elseif (empty($Clases)): ?>
-                    <!-- Si existen clases pero el usuario no está inscrito en ninguna -->
+                <?php 
+                elseif (empty($Clases)): 
+                ?>
+                    <!-- Si existen clases pero el usuario no está inscrito en ninguna, tambien se podria poner como $Clases == 0 -->
                     <div class="alert alert-warning text-center" role="alert">
                         No estás inscrito a ninguna clase.
                     </div>
-                <?php else: ?>
+                <?php else: 
+                    ?>
                     <!-- Si el usuario está inscrito en alguna clase, mostramos la tabla -->
                     <p class="text-center">Estás inscrito en las siguientes clases:</p>
                     <div class="table-responsive">
@@ -169,12 +175,14 @@ if (isset($_GET['mensaje'])) {
                                     <td><?php echo htmlspecialchars($clase['Capacidad_clase']); // Capacidad de la clase ?></td>
                                     <td><?php echo htmlspecialchars($clase['Id_monitor']); // ID del monitor ?></td>
                                     <td>
-                                        <!-- Botón para desapuntarse de la clase (elimina la inscripción) -->
+                                        <!-- Botón para desapuntarse de la clase (elimina la inscripción, no la clase. Y solo la seleccionada dentro del foreach, no todas a las que está inscrita) -->
                                         <a href="eliminar-clase-usuario.php?Id_clase=<?php echo $clase['Id_clase']; ?>" 
                                         class="btn btn-danger btn-sm">Eliminar</a>
                                     </td>
                                 </tr>
-                            <?php endforeach; // Fin del foreach ?>
+                            <?php
+                            endforeach; // Fin del foreach 
+                            ?>
                         </tbody>
                     </table>
                     </div>
@@ -192,9 +200,12 @@ if (isset($_GET['mensaje'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Mostrar el toast automáticamente si existe
+        // Cuando el HTML de la página ya esté completamente cargado (pero sin esperar imágenes o CSS), ejecuta esta función.
         window.addEventListener('DOMContentLoaded', function() {
             var toastEl = document.getElementById('mainToast');
+            // Verifica si encontró ese elemento. Si no existe, no hace nada (evita errores).
             if (toastEl) {
+                // Muestra el toast usando Bootstrap
                 var toast = new bootstrap.Toast(toastEl);
                 toast.show();
             }
