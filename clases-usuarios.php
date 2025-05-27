@@ -191,7 +191,7 @@ if (isset($_GET['mensaje'])) {
             <div class="card-footer text-center">
                 <!-- Botón para apuntarse a una nueva clase -->
                 <a href="añadir-clase-usuario.php" class="btn btn-purple">Añadir Clase</a>
-                <!-- Botón para cerrar sesión -->
+                <!-- Botón para cerrar sesión, redirige a cerrarsesion.php -->
                 <a href="cerrarsesion.php" class="btn btn-outline-danger">Cerrar Sesión</a>
             </div>
         </div>
