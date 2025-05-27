@@ -1,25 +1,38 @@
 <?php
 require 'conexion.php';
 session_start();
-
+// Si no tiene datos de sesión, especificamente el nombre e Id del usuario, redirige al formulario de inicio de sesión
 if (!isset($_SESSION['Nombre']) || !isset($_SESSION['Id_usuario'])) {
     header('Location: formulario.html');
     exit();
 }
-
+// Creamos una variable para guardar el id del usuario
 $Id_usuario = $_SESSION['Id_usuario'];
 
-// Procesar inscripción si se envía el formulario
+// Verifica que los datos se hayan enviado por el método POST, asi no acepta datos enviados por método GET y que exista el Id_clase, no es como tal completamente necesario, pero asi es más seguro
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Id_clase'])) {
+    // Convertir el Id_clase a entero
     $Id_clase = intval($_POST['Id_clase']);
 
     // Obtener el Id_monitor de la clase seleccionada
     $sql_monitor = "SELECT Id_monitor FROM clases WHERE Id_clase = ?";
     $stmt_monitor = $mysqli->prepare($sql_monitor);
+    // Pasamos el id de la clase a la consulta
     $stmt_monitor->bind_param("i", $Id_clase);
+    // Ejecutamos la consulta
     $stmt_monitor->execute();
+    // Obtenemos el resultado de la consulta
     $result_monitor = $stmt_monitor->get_result();
+    // Esto extrae una fila del resultado de la consulta SQL y la guarda como un array asociativo.
     $row_monitor = $result_monitor->fetch_assoc();
+
+    // Si row_monitor es null, significa que no se encontró el monitor para esa clase
+    // Si se encontró, extraemos el Id_monitor
+    // Es lo mismo que hacer: if ($row_monitor) {
+    //     $Id_monitor = $row_monitor['Id_monitor'];
+    // } else {
+    //     $Id_monitor = null;
+    // }
     $Id_monitor = $row_monitor ? $row_monitor['Id_monitor'] : null;
 
     $sql_insert = "INSERT INTO inscripciones (Id_usuario, Id_monitor, Id_clase) VALUES (?, ?, ?)";
