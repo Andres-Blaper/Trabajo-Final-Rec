@@ -6,7 +6,7 @@ if (!isset($_SESSION['Nombre'])) {
 }
 $nombre_monitor = $_SESSION['Nombre'];
 
-// Conexión a la base de datos (nombre correcto: gimnasio)
+// Conexión a la base de datos, tambien se podria haber usado require 'conexion.php';
 $mysqli = new mysqli("localhost", "root", "", "gimnasio");
 
 // Obtener número de clases
@@ -48,9 +48,10 @@ $num_inscripciones = $res_inscripciones ? $res_inscripciones->fetch_assoc()['tot
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            width: 270px; /* Aumenta el ancho fijo de la columna */
+            width: 270px;
             max-width: 100%;
         }
+        /* Esto es una regla para pantallas pequeñas, para que la barra de la izquierda ocupe toda la pantalla */
         @media (max-width: 991.98px) {
             .sidebar {
                 width: 100% !important;
@@ -97,6 +98,7 @@ $num_inscripciones = $res_inscripciones ? $res_inscripciones->fetch_assoc()['tot
         .dashboard-card .card-body {
             padding: 2.7rem 0.5rem; /* Antes era 1.2rem, ahora menos */
         }
+        /* Estos 4 son para las cartas del cuerpo, son media query */
         @media (max-width: 1600px) {
             .dashboard-card {
                 width: 16rem;
