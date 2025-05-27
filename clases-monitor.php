@@ -6,7 +6,8 @@ if (!isset($_SESSION['Nombre']) || !isset($_SESSION['Id_monitor'])) {
     header('Location: formulario.html');
     exit();
 }
-
+// Creamos 2 variables para guardar el nombre del monitor y su Id
+// Estas variables se usan para mostrar el nombre del monitor en la página y para realizar consultas a la base de datos
 $Nombre = $_SESSION['Nombre'];
 $Id_monitor = $_SESSION['Id_monitor'];
 
@@ -19,10 +20,13 @@ $stmt->bind_param("i", $Id_monitor);
 $stmt->execute();
 $result = $stmt->get_result();
 
+// Creamos un array vacio en la sesión llamado ClasesMonitor, que contendrá las clases que imparte el monitor
 $_SESSION['ClasesMonitor'] = [];
-while ($fila = $result->fetch_assoc()) {
+// Recorremos el resultado de la consulta y guardamos cada fila en el array ClasesMonitor
+while ($fila = $result->fetch_assoc()) { 
     $_SESSION['ClasesMonitor'][] = $fila;
 }
+// Los datos del array los pasamos a la variable $Clases
 $Clases = $_SESSION['ClasesMonitor'];
 
 // --- COMPROBAR SI EXISTEN CLASES EN EL SISTEMA ---
@@ -102,6 +106,7 @@ if (isset($_GET['mensaje'])) {
     <!-- Contenedor para los mensajes toast (notificaciones flotantes) -->
     <div aria-live="polite" aria-atomic="true" class="position-relative">
         <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+            <!-- Si hay datos en mensaje, lo envia, mostrandolo por pantalla junto con la clase para que dependiendo de esta se vea de cierta forma u otra -->
             <?php if (isset($_GET['mensaje'])): ?>
                 <div class="toast align-items-center <?php echo $toastClass; ?>" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000" id="mainToast">
                     <div class="d-flex">
@@ -148,6 +153,7 @@ if (isset($_GET['mensaje'])) {
                                     <td><?php echo htmlspecialchars($clase['Nombre_clase']); ?></td>
                                     <td><?php echo htmlspecialchars($clase['Capacidad_clase']); ?></td>
                                     <td>
+                                        <!-- Esto es para eliminar en "2 pasos" la clase seleccionada, que muestre el navegador un mensaje emergente y al darle a sí, redirige a eliminar-clase-definitiva.php con el valor del Id_clase que queremos eliminar -->
                                         <a href="eliminar-clase-definitiva.php?Id_clase=<?php echo $clase['Id_clase']; ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('¿Seguro que quieres eliminar esta clase? Esta acción no se puede deshacer.');">
@@ -180,14 +186,21 @@ if (isset($_GET['mensaje'])) {
             }
 
             // Ordenar tabla al hacer clic en los th
+            // Busca todas las celdas de encabezado (<th>) dentro del <thead> de una tabla con clase .table.
             document.querySelectorAll('.table thead th').forEach(function(th, colIndex) {
+                // Se indica que el th es clickable
                 th.style.cursor = 'pointer';
+                // Cuando se clicka en un th
                 th.addEventListener('click', function() {
+                    //  Busca la tabla más cercana al encabezado
                     let table = th.closest('table');
+                    // Obtiene todas las filas de la tabla y las convierte en un array para ordenarlas
                     let tbody = table.querySelector('tbody');
                     let rows = Array.from(tbody.querySelectorAll('tr'));
+                    // Determina el sentido del orden: Si la columna ya estaba en orden ascendente (data-asc="true"), se cambia a descendente (false), y viceversa.
                     let asc = th.dataset.asc === 'true' ? false : true;
                     rows.sort(function(a, b) {
+                        // Toma el texto de la columna clicada (por índice) en cada fila a y b. Usa .trim() para limpiar espacios en blanco.
                         let aText = a.children[colIndex].textContent.trim();
                         let bText = b.children[colIndex].textContent.trim();
                         // Si es número, compara como número
