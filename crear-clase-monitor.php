@@ -7,11 +7,15 @@ if (!isset($_SESSION['Id_monitor'])) {
     header('Location: formulario.html');
     exit();
 }
-
+// Se inicializa una variable llamada $mensaje y se le asigna un string vacío, esto, más adelante se usará para asignarle un valor, y con eso, mostrar un toast de cierta forma u otra.
 $mensaje = '';
+// // Se inicializa la variable $toast como false. Esta se usará como un interruptor para saber si mostrar un toast (mensaje emergente) al usuario.
 $toast = false;
+// Si el formulario se ha enviado por método POST...
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Se obtiene y limpia el nombre de la clase del formulario, eliminando espacios al inicio y al final.
     $nombre = trim($_POST['nombre']);
+    // Se convierte la capacidad y el id del monitor recibida en un número entero.
     $capacidad = intval($_POST['capacidad']);
     $id_monitor = intval($_POST['id_monitor']);
 
@@ -23,11 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result_check = $stmt_check->get_result();
     $row_check = $result_check->fetch_assoc();
 
+    // Si el total es mayor a 0, es decir, si el count a tomado una columna. Significa que ya existe una clase con ese nombre.
     if ($row_check['total'] > 0) {
+        // Muestra el toast con un mensaje de error.
         $toast = true;
         $toastClass = 'bg-danger text-white';
         $toastMsg = 'Ya existe una clase con ese nombre.';
+        // Si el nombre no está vacío, la capacidad está entre 1 y 20, y el id del monitor es válido..
     } elseif ($nombre && $capacidad >= 1 && $capacidad <= 20 && $id_monitor > 0) {
+        // Inserta la nueva clase en la base de datos y muestra un toast de éxito.
         $sql = "INSERT INTO clases (Nombre_clase, Capacidad_clase, Id_monitor) VALUES (?, ?, ?)";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("sii", $nombre, $capacidad, $id_monitor);
@@ -104,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
                 <label for="id_monitor" class="form-label">ID del Monitor</label>
+                <!-- Con esto, no se podrá modificar el campo y además se autocompletará con el valor del ID del monitor con el que ha iniciado sesion -->
                 <input type="number" class="form-control" id="id_monitor" name="id_monitor" value="<?php echo $_SESSION['Id_monitor']; ?>" readonly>
             </div>
             <button type="submit" class="btn btn-purple w-100">Crear Clase</button>
