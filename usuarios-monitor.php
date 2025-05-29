@@ -88,6 +88,7 @@ while ($fila = $result->fetch_assoc()) {
                                 <th scope="col">Apellido</th>
                                 <th scope="col">Contraseña</th>
                                 <th scope="col">Correo</th>
+                                <th scope="col">Editar</th> <!-- Nuevo encabezado -->
                                 <th scope="col">Eliminar</th>
                             </tr>
                         </thead>
@@ -97,8 +98,21 @@ while ($fila = $result->fetch_assoc()) {
                                     <td><?php echo htmlspecialchars($usuario['Id_usuario']); ?></td>
                                     <td><?php echo htmlspecialchars($usuario['Nombre']); ?></td>
                                     <td><?php echo htmlspecialchars($usuario['Apellido']); ?></td>
-                                    <td><?php echo htmlspecialchars($usuario['Contraseña']); ?></td>
+                                    <td>
+                                        <div class="input-group">
+                                            <input type="password" class="form-control form-control-sm border-0 bg-transparent p-0" style="width:auto;display:inline;" value="<?php echo htmlspecialchars($usuario['Contraseña']); ?>" readonly>
+                                            <button type="button" class="btn btn-link btn-sm px-1 toggle-pass" tabindex="-1">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
                                     <td><?php echo htmlspecialchars($usuario['Correo']); ?></td>
+                                    <td>
+                                        <a href="editar-usuario-monitor.php?Id_usuario=<?php echo $usuario['Id_usuario']; ?>"
+                                           class="btn btn-warning btn-sm">
+                                           Editar
+                                        </a>
+                                    </td>
                                     <td>
                                         <a href="eliminar-usuario-definitivo.php?Id_usuario=<?php echo $usuario['Id_usuario']; ?>"
                                            class="btn btn-danger btn-sm"
@@ -161,6 +175,23 @@ while ($fila = $result->fetch_assoc()) {
                 table.querySelectorAll('th').forEach(t => t.removeAttribute('data-asc'));
                 th.dataset.asc = asc;
                 rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+
+        // Mostrar/ocultar contraseñas
+        document.querySelectorAll('.toggle-pass').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const input = btn.parentElement.querySelector('input');
+                const icon = btn.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
             });
         });
     </script>
