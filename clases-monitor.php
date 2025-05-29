@@ -215,7 +215,9 @@ if (isset($_GET['mensaje'])) {
                     // Marca el th actual con el estado de orden
                     th.setAttribute('data-asc', asc);
                     // Reemplaza el tbody con las filas ordenadas
+                    // Vacía el <tbody> actual.
                     tbody.innerHTML = '';
+                    // Agrega las filas ordenadas de nuevo, en el nuevo orden.
                     rows.forEach(row => tbody.appendChild(row));
                 });
             });
