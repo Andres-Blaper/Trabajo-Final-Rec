@@ -114,11 +114,24 @@ $num_inscripciones = $res_inscripciones ? $res_inscripciones->fetch_assoc()['tot
                 width: 14rem;
             }
         }
-        @media (max-width: 1100px) {
-            .dashboard-card {
-                width: 100%;
-            }
-        }
+        
+        @media (max-width: 991.98px) {
+    .dashboard-cards {
+        width: 100%;
+        margin-left: 1.5rem;
+        margin-right: 1.5rem;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 2rem !important;
+    }
+    .dashboard-card {
+        width: 100% !important;
+        max-width: 500px;
+        min-width: 220px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
     </style>
 </head>
 <body>
