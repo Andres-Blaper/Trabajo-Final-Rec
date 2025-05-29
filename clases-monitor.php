@@ -143,6 +143,7 @@ if (isset($_GET['mensaje'])) {
                                 <th scope="col">ID de la Clase</th>
                                 <th scope="col">Nombre de la Clase</th>
                                 <th scope="col">Capacidad</th>
+                                <th scope="col">Editar</th> <!-- Nuevo encabezado -->
                                 <th scope="col">Eliminar</th>
                             </tr>
                         </thead>
@@ -153,7 +154,14 @@ if (isset($_GET['mensaje'])) {
                                     <td><?php echo htmlspecialchars($clase['Nombre_clase']); ?></td>
                                     <td><?php echo htmlspecialchars($clase['Capacidad_clase']); ?></td>
                                     <td>
-                                        <!-- Esto es para eliminar en "2 pasos" la clase seleccionada, que muestre el navegador un mensaje emergente y al darle a sí, redirige a eliminar-clase-definitiva.php con el valor del Id_clase que queremos eliminar -->
+                                        <!-- Botón para editar la clase -->
+                                        <a href="editar-clase-monitor.php?Id_clase=<?php echo $clase['Id_clase']; ?>"
+                                           class="btn btn-warning btn-sm">
+                                           Editar
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <!-- Botón para eliminar la clase es dos pasos, pide verificación -->
                                         <a href="eliminar-clase-definitiva.php?Id_clase=<?php echo $clase['Id_clase']; ?>"
                                            class="btn btn-danger btn-sm"
                                            onclick="return confirm('¿Seguro que quieres eliminar esta clase? Esta acción no se puede deshacer.');">
