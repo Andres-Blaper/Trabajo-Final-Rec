@@ -7,15 +7,18 @@ if (!isset($_SESSION['Nombre']) || !isset($_SESSION['Id_monitor'])) {
     header('Location: formulario.html');
     exit();
 }
-
+// Recoger el nombre del monitor de la sesión y lo asignamos a una variable
 $Nombre = $_SESSION['Nombre'];
 
 // Obtener todos los usuarios
 $sql = "SELECT Id_usuario, Nombre, Apellido, Contraseña, Correo FROM usuarios";
+// Preparamos la consulta para ejecutarla
 $result = $mysqli->query($sql);
-
+// Creamos un array vacío
 $usuarios = [];
+// fetch_assoc() obtiene la siguiente fila del resultado como un array asociativo y la almacena como variable $fila
 while ($fila = $result->fetch_assoc()) {
+    // Inserta el valor de $fila en el array $usuarios
     $usuarios[] = $fila;
 }
 ?>
@@ -73,6 +76,7 @@ while ($fila = $result->fetch_assoc()) {
             <div class="card-header bg-purple">
                 <h1 class="text-center">Bienvenido, <?php echo htmlspecialchars($Nombre); ?></h1>
             </div>
+            <!-- Esto es para buscar los usuarios, la lupa -->
             <div class="card-body">
                 <p class="text-center">Estos son los usuarios existentes:</p>
                 <div class="input-group mb-3">
@@ -88,7 +92,7 @@ while ($fila = $result->fetch_assoc()) {
                                 <th scope="col">Apellido</th>
                                 <th scope="col">Contraseña</th>
                                 <th scope="col">Correo</th>
-                                <th scope="col">Editar</th> <!-- Nuevo encabezado -->
+                                <th scope="col">Editar</th> 
                                 <th scope="col">Eliminar</th>
                             </tr>
                         </thead>
@@ -99,6 +103,7 @@ while ($fila = $result->fetch_assoc()) {
                                     <td><?php echo htmlspecialchars($usuario['Nombre']); ?></td>
                                     <td><?php echo htmlspecialchars($usuario['Apellido']); ?></td>
                                     <td>
+                                        <!-- Esto es para mostrar/ocultar las contraseñas -->
                                         <div class="input-group">
                                             <input type="password" class="form-control form-control-sm border-0 bg-transparent p-0" style="width:auto;display:inline;" value="<?php echo htmlspecialchars($usuario['Contraseña']); ?>" readonly>
                                             <button type="button" class="btn btn-link btn-sm px-1 toggle-pass" tabindex="-1">
@@ -180,14 +185,20 @@ while ($fila = $result->fetch_assoc()) {
 
         // Mostrar/ocultar contraseñas
         document.querySelectorAll('.toggle-pass').forEach(function(btn) {
+            // Añade un evento de clic
             btn.addEventListener('click', function() {
                 const input = btn.parentElement.querySelector('input');
                 const icon = btn.querySelector('i');
+                // Si el tipo de input es password..
                 if (input.type === 'password') {
+                    // Lo cambia a text para poderlo ver
                     input.type = 'text';
+                    // Quita el icono del ojo
                     icon.classList.remove('bi-eye');
+                    // Añade el icono del ojo tachado
                     icon.classList.add('bi-eye-slash');
                 } else {
+                    // Esto es para volver a ocultar la contraseña, visersa
                     input.type = 'password';
                     icon.classList.remove('bi-eye-slash');
                     icon.classList.add('bi-eye');
