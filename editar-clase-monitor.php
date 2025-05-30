@@ -122,6 +122,7 @@ if (!$clase) {
 
     <!-- Toast -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+        <!-- Verifica si la variable $toast_type existe y no es null. Si sí existe, usa su valor (por ejemplo: 'danger', 'info', 'warning'...). Si no existe, entonces usa 'success' por defecto.Porque evita errores y asegura que el toast tenga siempre una clase de estilo válida, incluso si $toast_type no fue definida.-->
         <div id="liveToast" class="toast align-items-center text-bg-<?php echo isset($toast_type) ? $toast_type : 'success'; ?> border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body">
