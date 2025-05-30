@@ -9,7 +9,7 @@ if (!isset($_SESSION['Id_monitor'])) {
 }
 // Se inicializa una variable llamada $mensaje y se le asigna un string vacío, esto, más adelante se usará para asignarle un valor, y con eso, mostrar un toast de cierta forma u otra.
 $mensaje = '';
-// // Se inicializa la variable $toast como false. Esta se usará como un interruptor para saber si mostrar un toast (mensaje emergente) al usuario.
+// Se inicializa la variable $toast como false. Esta se usará como un interruptor para saber si mostrar un toast (mensaje emergente) al usuario.
 $toast = false;
 // Si el formulario se ha enviado por método POST...
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

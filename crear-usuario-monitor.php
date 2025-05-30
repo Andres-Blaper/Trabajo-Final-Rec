@@ -2,8 +2,15 @@
 require 'conexion.php';
 session_start();
 
+if (!isset($_SESSION['Id_monitor'])) {
+    header('Location: formulario.html');
+    exit();
+}
+// Se inicializa una variable llamada $mensaje y se le asigna un string vacío, esto, más adelante se usará para asignarle un valor, y con eso, mostrar un toast de cierta forma u otra.
 $mensaje = '';
+// // Se inicializa la variable $toast como false. Esta se usará como un interruptor para saber si mostrar un toast (mensaje emergente) al usuario.
 $toast = false;
+// Se asegura que el formulario se ha enviado por método POST y recoge los datos del formulario con un trim para eliminar espacios al inicio y al final.
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre']);
     $apellido = trim($_POST['apellido']);
@@ -25,19 +32,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt_check_nombre->execute();
     $result_check_nombre = $stmt_check_nombre->get_result();
     $row_check_nombre = $result_check_nombre->fetch_assoc();
-
+// Si el count de la sentencia SQL de "SELECT COUNT(*) as total FROM usuarios WHERE Correo = ?"; toma un valor mayor a 0, significa que ya existe un usuario con ese correo, y cuando esto pasa...
     if ($row_check['total'] > 0) {
+        // Muestra un toast con un mensaje de error.
         $toast = true;
         $toastClass = 'bg-danger text-white';
         $toastMsg = 'Ya existe un usuario con ese correo.';
+// Por otro lado, si el count de la sentencia SQL de "SELECT COUNT(*) as total FROM usuarios WHERE Nombre = ? AND Apellido = ?"; toma un valor mayor a 0, significa que ya existe un usuario con ese nombre y apellido,
+// aquí solo se tiene en cuenta si los dos coinciden, obviamente, puede haber un mismo nombre entre usuarios o mismo apellido, pero no mismo nombre y apellido simultaneamente, y cuando esto pasa...
     } elseif ($row_check_nombre['total'] > 0) {
         $toast = true;
         $toastClass = 'bg-danger text-white';
         $toastMsg = 'Ya existe un usuario con ese nombre y apellido.';
+        // Se podria perfectamente hacer simplemente con un elseif, sin necesidad de esta comprobación ($nombre && $apellido && $contrasena && $correo), esto evita que esos campos esten vacíos, aunque esto ya lo evita el required, se podria quitar perfectamente.
     } elseif ($nombre && $apellido && $contrasena && $correo) {
+        // Hacemos una sentencia SQL para insertar valores en la tabla usuarios.
         $sql = "INSERT INTO usuarios (Nombre, Apellido, Contraseña, Correo) VALUES (?, ?, ?, ?)";
+        // Preparamos la sentencia SQL.
         $stmt = $mysqli->prepare($sql);
+        // Vinculamos los parámetros a la sentencia preparada, ssss son 4 strings.
         $stmt->bind_param("ssss", $nombre, $apellido, $contrasena, $correo);
+        // Ejecutamos la sentencia, y dependiendo del resultado, mostramos un toast de éxito o de error.
         if ($stmt->execute()) {
             $toast = true;
             $toastClass = 'bg-success text-white';
@@ -54,10 +69,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Obtener el próximo ID autoincremental
+// Obtener el próximo ID autoincremental, se podría eliminar esta consulta y dejar que la base de datos lo haga automáticamente, pero se ha decidido hacerlo así para mostrar el ID al usuario mientras el monitor está en el formulario de creacion de usuarios.
+// Con esta consulta, se obtiene el próximo ID autoincremental de la tabla usuarios, information_schema.TABLES es como una base de datos que describe otras bases de datos, no contiene los datos, si no la estructura de la bd.
 $sql_next_id = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'gimnasio' AND TABLE_NAME = 'usuarios'";
+// Se ejecuta la consulta y se guarda el resultado en una variable.
 $result_next_id = $mysqli->query($sql_next_id);
+// Extrae la primera (y única) fila del resultado como un array asociativo
 $row_next_id = $result_next_id->fetch_assoc();
+// Si se ejecuta correctamente, se guarda la variable $next_id con el valor del ID autoincremental, si no, se guarda como un string vacío.
 $next_id = $row_next_id ? $row_next_id['AUTO_INCREMENT'] : '';
 ?>
 <!DOCTYPE html>
@@ -132,18 +151,31 @@ $next_id = $row_next_id ? $row_next_id['AUTO_INCREMENT'] : '';
         </form>
     </div>
     <script>
+    // Declara una función llamada quitarTildes que recibe un parámetro texto.
 function quitarTildes(texto) {
+    // texto.normalize("NFD"): descompone caracteres acentuados (por ejemplo, "é" → "e" + "́").
+    // .replace(/[\u0300-\u036f]/g, ""): elimina los caracteres "extra" que resultan de esa descomposición (como la tilde), usando una expresión regular que borra los caracteres Unicode de acentos.
     return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
+// Declara otra función llamada generarCorreo. Esta se usará para construir automáticamente el correo.
 function generarCorreo() {
+    // Toma el valor del campo nombre del formulario.
+    // .trim(): elimina espacios al inicio y final.
+    // .toLowerCase(): convierte a minúsculas.
+    // .replace(/\s+/g, ''): elimina todos los espacios internos (si alguien escribió "Juan Carlos").
+    // quitarTildes(...): quita acentos.
+    // Guarda el resultado limpio en la variable nombre/apellido.
     let nombre = quitarTildes(document.getElementById('nombre').value.trim().toLowerCase().replace(/\s+/g, ''));
     let apellido = quitarTildes(document.getElementById('apellido').value.trim().toLowerCase().replace(/\s+/g, ''));
+    // Si hay nombre y apellido, genera un correo del tipo: nombre.apellido@email.com y lo asigna automáticamente al campo correo.
     if(nombre && apellido) {
         document.getElementById('correo').value = nombre + '.' + apellido + '@email.com';
     } else {
+        // Si no hay nombre o apellido, limpia el campo correo.
         document.getElementById('correo').value = '';
     }
 }
+// Cada vez que el usuario escriba algo en el campo nombre o apellido, se ejecuta la función generarCorreo.
 document.getElementById('nombre').addEventListener('input', generarCorreo);
 document.getElementById('apellido').addEventListener('input', generarCorreo);
 </script>
