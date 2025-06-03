@@ -35,6 +35,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Id_clase'])) {
     // }
     $Id_monitor = $row_monitor ? $row_monitor['Id_monitor'] : null;
 
+    // Obtener la capacidad máxima de la clase
+    $sql_cap = "SELECT Capacidad_clase FROM clases WHERE Id_clase = ?";
+    $stmt_cap = $mysqli->prepare($sql_cap);
+    $stmt_cap->bind_param("i", $Id_clase);
+    $stmt_cap->execute();
+    $result_cap = $stmt_cap->get_result();
+    $capacidadClase = $result_cap->fetch_assoc();
+    $capacidad_max = $capacidadClase ? intval($capacidadClase['Capacidad_clase']) : 0;
+
+    // Contar inscritos actuales en la clase
+    $sql_count = "SELECT COUNT(*) AS inscritos FROM inscripciones WHERE Id_clase = ?";
+    $stmt_count = $mysqli->prepare($sql_count);
+    $stmt_count->bind_param("i", $Id_clase);
+    $stmt_count->execute();
+    $result_count = $stmt_count->get_result();
+    $inscritosClase = $result_count->fetch_assoc();
+    $inscritos = $inscritosClase ? intval($inscritosClase['inscritos']) : 0;
+
+    // Si la clase está llena, redirige con mensaje de error
+    if ($inscritos >= $capacidad_max) {
+        header('Location: clases-usuarios.php?mensaje=sin_capacidad');
+        exit();
+    }
+
     $sql_insert = "INSERT INTO inscripciones (Id_usuario, Id_monitor, Id_clase) VALUES (?, ?, ?)";
     $stmt_insert = $mysqli->prepare($sql_insert);
     $stmt_insert->bind_param("iii", $Id_usuario, $Id_monitor, $Id_clase);

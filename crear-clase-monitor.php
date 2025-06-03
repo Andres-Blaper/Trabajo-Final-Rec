@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Se convierte la capacidad y el id del monitor recibida en un número entero.
     $capacidad = intval($_POST['capacidad']);
     $id_monitor = intval($_POST['id_monitor']);
+    $hora_clase = $_POST['hora_clase']; // Recoge la hora
 
     // Comprobar si ya existe una clase con ese nombre
     $sql_check = "SELECT COUNT(*) as total FROM clases WHERE Nombre_clase = ?";
@@ -34,11 +35,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $toastClass = 'bg-danger text-white';
         $toastMsg = 'Ya existe una clase con ese nombre.';
         // Si el nombre no está vacío, la capacidad está entre 1 y 20, y el id del monitor es válido..
-    } elseif ($nombre && $capacidad >= 1 && $capacidad <= 20 && $id_monitor > 0) {
+    } elseif ($nombre && $capacidad >= 1 && $capacidad <= 20 && $id_monitor > 0 && $hora_clase) {
         // Inserta la nueva clase en la base de datos y muestra un toast de éxito.
-        $sql = "INSERT INTO clases (Nombre_clase, Capacidad_clase, Id_monitor) VALUES (?, ?, ?)";
+        $sql = "INSERT INTO clases (Nombre_clase, Capacidad_clase, Id_monitor, Hora_clase) VALUES (?, ?, ?, ?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("sii", $nombre, $capacidad, $id_monitor);
+        $stmt->bind_param("siis", $nombre, $capacidad, $id_monitor, $hora_clase);
         if ($stmt->execute()) {
             $toast = true;
             $toastClass = 'bg-success text-white';
@@ -109,6 +110,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label for="capacidad" class="form-label">Capacidad</label>
                 <input type="number" class="form-control" id="capacidad" name="capacidad" min="1" max="20" required>
+            </div>
+            <div class="mb-3">
+                <label for="hora_clase" class="form-label">Hora de la Clase</label>
+                <input type="time" class="form-control" id="hora_clase" name="hora_clase" required>
             </div>
             <div class="mb-3">
                 <label for="id_monitor" class="form-label">ID del Monitor</label>

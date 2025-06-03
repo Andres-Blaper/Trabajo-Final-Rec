@@ -14,7 +14,7 @@ $Id_monitor = $_SESSION['Id_monitor'];
 require 'conexion.php';
 
 // --- OBTENER LAS CLASES QUE IMPARTE EL MONITOR ---
-$sql = "SELECT Id_clase, Nombre_clase, Capacidad_clase, Id_monitor FROM clases WHERE Id_monitor = ?";
+$sql = "SELECT Id_clase, Nombre_clase, Capacidad_clase, Hora_clase, Id_monitor FROM clases WHERE Id_monitor = ?";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $Id_monitor);
 $stmt->execute();
@@ -99,6 +99,11 @@ if (isset($_GET['mensaje'])) {
         position: relative;
         z-index: 1;
     }
+    th {
+        vertical-align: middle !important;
+        text-align: left !important;
+        white-space: normal;
+    }
     </style>
 </head>
 <body class="bg-light">
@@ -137,41 +142,45 @@ if (isset($_GET['mensaje'])) {
                     </div>
                 <?php else: ?>
                     <p class="text-center">Monitorizas las siguientes clases:</p>
-                    <table class="table table-striped table-bordered">
-                        <thead class="table-dark">
-                            <tr>
-                                <th scope="col">ID de la Clase</th>
-                                <th scope="col">Nombre de la Clase</th>
-                                <th scope="col">Capacidad</th>
-                                <th scope="col">Editar</th> <!-- Nuevo encabezado -->
-                                <th scope="col">Eliminar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($Clases as $clase): ?>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered align-middle">
+                            <thead class="table-dark">
                                 <tr>
-                                    <td><?php echo htmlspecialchars($clase['Id_clase']); ?></td>
-                                    <td><?php echo htmlspecialchars($clase['Nombre_clase']); ?></td>
-                                    <td><?php echo htmlspecialchars($clase['Capacidad_clase']); ?></td>
-                                    <td>
-                                        <!-- Botón para editar la clase -->
-                                        <a href="editar-clase-monitor.php?Id_clase=<?php echo $clase['Id_clase']; ?>"
-                                           class="btn btn-warning btn-sm">
-                                           Editar
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <!-- Botón para eliminar la clase es dos pasos, pide verificación -->
-                                        <a href="eliminar-clase-definitiva.php?Id_clase=<?php echo $clase['Id_clase']; ?>"
-                                           class="btn btn-danger btn-sm"
-                                           onclick="return confirm('¿Seguro que quieres eliminar esta clase? Esta acción no se puede deshacer.');">
-                                           Eliminar
-                                        </a>
-                                    </td>
+                                    <th scope="col">ID Clase</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Capacidad</th>
+                                    <th scope="col">Hora</th>
+                                    <th scope="col">Editar</th>
+                                    <th scope="col">Eliminar</th>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($Clases as $clase): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($clase['Id_clase']); ?></td>
+                                        <td><?php echo htmlspecialchars($clase['Nombre_clase']); ?></td>
+                                        <td><?php echo htmlspecialchars($clase['Capacidad_clase']); ?></td>
+                                        <td><?php echo htmlspecialchars($clase['Hora_clase']); ?></td>
+                                        <td>
+                                            <!-- Botón para editar la clase -->
+                                            <a href="editar-clase-monitor.php?Id_clase=<?php echo $clase['Id_clase']; ?>"
+                                               class="btn btn-warning btn-sm">
+                                               Editar
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <!-- Botón para eliminar la clase -->
+                                            <a href="eliminar-clase-definitiva.php?Id_clase=<?php echo $clase['Id_clase']; ?>"
+                                               class="btn btn-danger btn-sm"
+                                               onclick="return confirm('¿Seguro que quieres eliminar esta clase? Esta acción no se puede deshacer.');">
+                                               Eliminar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 <?php endif; ?>
             </div>
             <div class="card-footer text-center">
@@ -211,6 +220,19 @@ if (isset($_GET['mensaje'])) {
                         // Toma el texto de la columna clicada (por índice) en cada fila a y b. Usa .trim() para limpiar espacios en blanco.
                         let aText = a.children[colIndex].textContent.trim();
                         let bText = b.children[colIndex].textContent.trim();
+
+                        // Si la columna es la de hora (ajusta el índice si cambia el orden de columnas)
+                        if (colIndex === 3) { // 3 si la columna Hora es la cuarta, como es el caso
+                            // Convierte HH:MM o HH:MM:SS a minutos totales para comparar
+                            function horaToMinutos(hora) {
+                                let partes = hora.split(':');
+                                return parseInt(partes[0], 10) * 60 + parseInt(partes[1], 10);
+                            }
+                            let aMin = horaToMinutos(aText);
+                            let bMin = horaToMinutos(bText);
+                            return asc ? aMin - bMin : bMin - aMin;
+                        }
+
                         // Si es número, compara como número
                         if (!isNaN(aText) && !isNaN(bText)) {
                             return asc ? aText - bText : bText - aText;

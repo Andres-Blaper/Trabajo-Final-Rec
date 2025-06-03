@@ -15,7 +15,7 @@ require 'conexion.php'; // Incluimos la conexión a la base de datos
 
 // --- OBTENER LAS CLASES EN LAS QUE ESTÁ INSCRITO EL USUARIO ---
 // Consulta SQL para obtener las clases en las que el usuario está inscrito, necesitamos unir entre las tablas 'clases' e 'inscripciones con un join para obtener los datos de la tabla inscripcion que tenga el id del usuario'
-$sql = "SELECT c.Id_clase, c.Nombre_clase, c.Capacidad_clase, c.Id_monitor
+$sql = "SELECT c.Id_clase, c.Nombre_clase, c.Capacidad_clase, c.Hora_clase, c.Id_monitor
         FROM clases c
         INNER JOIN inscripciones i ON c.Id_clase = i.Id_clase
         WHERE i.Id_usuario = ?";
@@ -56,6 +56,9 @@ if (isset($_GET['mensaje'])) {
     } elseif ($_GET['mensaje'] === 'error') {
         $toastClass = 'bg-danger text-white';
         $toastMsg = 'Ocurrió un error al procesar la solicitud.';
+    } elseif ($_GET['mensaje'] === 'sin_capacidad') {
+        $toastClass = 'bg-danger text-white';
+        $toastMsg = 'La clase ya no tiene capacidad.';
     }
 }
 ?>
@@ -68,6 +71,8 @@ if (isset($_GET['mensaje'])) {
     <!-- Bootstrap CSS para estilos rápidos y responsive -->
     <link rel="icon" type="image/png" href="peso.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css">
     <style>
     /* Colores y estilos personalizados */
     .bg-purple {
@@ -108,13 +113,24 @@ if (isset($_GET['mensaje'])) {
         position: relative;
         z-index: 1;
     }
+    .text-purple {
+        color: #7c3aed !important;
+    }
+    .text-purple:hover {
+        color: #5b21b6 !important;
+    }
+    /* Centra verticalmente el texto de los encabezados y lo alinea a la izquierda */
+    th {
+        vertical-align: middle !important;
+        text-align: left !important;
+    }
     </style>
 </head>
 <body class="bg-light">
 
     <!-- Contenedor para los mensajes toast (notificaciones flotantes) -->
     <div aria-live="polite" aria-atomic="true" class="position-relative">
-        <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+        <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
             <?php if (isset($_GET['mensaje'])): ?>
                 <!-- Toast de Bootstrap, se muestra si hay mensaje -->
                 <div class="toast align-items-center <?php echo $toastClass; ?>" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000" id="mainToast">
@@ -156,13 +172,14 @@ if (isset($_GET['mensaje'])) {
                     <!-- Si el usuario está inscrito en alguna clase, mostramos la tabla -->
                     <p class="text-center">Estás inscrito en las siguientes clases:</p>
                     <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
+                    <table class="table table-striped table-bordered align-middle">
                         <thead class="table-dark">
                             <tr>
-                                <th scope="col">ID de la Clase</th>
-                                <th scope="col">Nombre de la Clase</th>
+                                <th scope="col">ID Clase</th>
+                                <th scope="col">Nombre</th>
                                 <th scope="col">Capacidad</th>
-                                <th scope="col">ID del Monitor</th>
+                                <th scope="col">Hora</th>
+                                <th scope="col">ID Monitor</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -173,6 +190,7 @@ if (isset($_GET['mensaje'])) {
                                     <td><?php echo htmlspecialchars($clase['Id_clase']); // ID de la clase ?></td>
                                     <td><?php echo htmlspecialchars($clase['Nombre_clase']); // Nombre de la clase ?></td>
                                     <td><?php echo htmlspecialchars($clase['Capacidad_clase']); // Capacidad de la clase ?></td>
+                                    <td><?php echo htmlspecialchars($clase['Hora_clase']); ?></td>
                                     <td><?php echo htmlspecialchars($clase['Id_monitor']); // ID del monitor ?></td>
                                     <td>
                                         <!-- Botón para desapuntarse de la clase (elimina la inscripción, no la clase. Y solo la seleccionada dentro del foreach, no todas a las que está inscrita) -->
@@ -188,7 +206,14 @@ if (isset($_GET['mensaje'])) {
                     </div>
                 <?php endif; ?>
             </div>
-            <div class="card-footer text-center">
+            <div class="card-footer d-flex flex-row align-items-center justify-content-center w-100 gap-3" style="flex-wrap: wrap;">
+                <!-- Icono de calendario alineado a la izquierda -->
+                <button type="button"
+                    class="btn btn-link text-purple p-0 m-0"
+                    style="font-size: 2.2rem; background: none; border: none; box-shadow: none;"
+                    data-bs-toggle="modal" data-bs-target="#calendarioModal" title="Ver calendario de clases">
+                    <i class="bi bi-calendar-event"></i>
+                </button>
                 <!-- Botón para apuntarse a una nueva clase -->
                 <a href="añadir-clase-usuario.php" class="btn btn-purple">Añadir Clase</a>
                 <!-- Botón para cerrar sesión, redirige a cerrarsesion.php -->
@@ -196,8 +221,25 @@ if (isset($_GET['mensaje'])) {
             </div>
         </div>
     </div>
+    <!-- Modal de Bootstrap para el calendario -->
+    <div class="modal fade" id="calendarioModal" tabindex="-1" aria-labelledby="calendarioModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4">
+          <div class="modal-header bg-purple text-white">
+            <h5 class="modal-title" id="calendarioModalLabel">Calendario de Clases</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <div id="calendar"></div>
+            <div id="clases-dia" class="mt-4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bootstrap JS para los componentes interactivos como Toast -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker-full.min.js"></script>
     <script>
         // Mostrar el toast automáticamente si existe
         // Cuando el HTML de la página ya esté completamente cargado (pero sin esperar imágenes o CSS), ejecuta esta función.
@@ -210,6 +252,66 @@ if (isset($_GET['mensaje'])) {
                 toast.show();
             }
         });
+
+// Espera a que toda la estructura HTML de la página esté cargada antes de ejecutar el código JavaScript.
+// El DOM (Document Object Model) es la representación en memoria de la estructura HTML de la página.
+// Esto permite que el JS acceda y modifique los elementos de la página.
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Crea un nuevo calendario en el elemento HTML que tiene el id 'calendar'.
+    // 'const' es una forma de declarar una variable que no va a cambiar su valor.
+    // Aquí, 'calendar' es una referencia al calendario que se muestra en pantalla.
+    const calendar = new Datepicker(document.getElementById('calendar'), {
+        language: 'es',         // El calendario estará en español.
+        autohide: true,         // El calendario se oculta automáticamente al seleccionar una fecha.
+        todayHighlight: true    // El día actual aparece resaltado en el calendario.
+    });
+
+    // Aquí se crea una lista (array) de objetos con la información de las clases del usuario.
+    // Cada objeto representa una clase, con su fecha, nombre y hora.
+    // Este array se rellena usando PHP, que genera el código JS con los datos de la base de datos.
+    const clases = [
+        <?php foreach ($Clases as $clase): ?>
+        {
+            fecha: '<?php echo date('Y-m-d'); ?>', // Fecha de la clase (actualmente siempre la de hoy, deberías cambiarlo si quieres la fecha real de la clase)
+            nombre: '<?php echo htmlspecialchars($clase['Nombre_clase']); ?>', // Nombre de la clase
+            hora: '<?php echo htmlspecialchars(substr($clase['Hora_clase'], 0, 5)); ?>' // Hora de la clase (solo horas y minutos)
+        },
+        <?php endforeach; ?>
+    ];
+
+    // Añade un "escuchador de eventos" al calendario.
+    // Esto significa que cuando el usuario selecciona una fecha en el calendario, se ejecuta la función que hay dentro.
+    document.getElementById('calendar').addEventListener('changeDate', function(e) {
+        // Obtiene la fecha seleccionada por el usuario y la convierte a texto con el formato 'YYYY-MM-DD'.
+        // 'const' declara una variable que no cambiará.
+        // 'e' es el evento que ocurre cuando el usuario cambia la fecha.
+        const fecha = e.detail.date.toISOString().slice(0,10);
+
+        // Busca en el array 'clases' todas las clases que tienen la misma fecha que la seleccionada.
+        // 'filter' crea un nuevo array solo con las clases de ese día.
+        const clasesHoy = clases.filter(c => c.fecha === fecha);
+
+        // 'let' declara una variable que puede cambiar su valor.
+        // Aquí se usará para guardar el HTML que se va a mostrar al usuario.
+        let html = '';
+
+        // Si hay alguna clase ese día, recorre todas y añade su nombre y hora al HTML.
+        if (clasesHoy.length > 0) {
+            clasesHoy.forEach(c => {
+                // Añade el nombre en negrita y la hora en gris.
+                html += `<div class="fw-bold">${c.nombre}</div><div class="text-muted">${c.hora}</div>`;
+            });
+        } else {
+            // Si no hay clases ese día, muestra un mensaje informativo.
+            html = '<div class="text-secondary">No tienes clases este día.</div>';
+        }
+
+        // Busca el elemento HTML con id 'clases-dia' y pone dentro el HTML generado arriba.
+        // Así, el usuario ve las clases de ese día (o el mensaje si no hay ninguna).
+        document.getElementById('clases-dia').innerHTML = html;
+    });
+});
     </script>
 </body>
 </html>
