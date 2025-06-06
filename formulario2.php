@@ -73,7 +73,7 @@ if ($fila) {
         header('Location: menu-monitor.php'); // Redirigir a otra página si es monitor
         exit();
     } else {
-        // Redirigir a formulario.html con error y el nombre
+        // Redirigir a formulario.html con error y el nombre, urlencode es una función de PHP que convierte el valor de $Correo a un formato seguro para usarlo en una URL.
         header('Location: formulario.html?error=' . urlencode($Correo));
         exit();
     }
