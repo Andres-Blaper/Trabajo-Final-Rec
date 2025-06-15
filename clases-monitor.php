@@ -14,7 +14,7 @@ $Id_monitor = $_SESSION['Id_monitor'];
 require 'conexion.php';
 
 // --- OBTENER LAS CLASES QUE IMPARTE EL MONITOR ---
-$sql = "SELECT Id_clase, Nombre_clase, Capacidad_clase, Hora_clase, Id_monitor FROM clases WHERE Id_monitor = ?";
+$sql = "SELECT Id_clase, Nombre_clase, Capacidad_clase, Hora_clase, Dias_semana FROM clases WHERE Id_monitor = ?";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $Id_monitor);
 $stmt->execute();
@@ -146,10 +146,10 @@ if (isset($_GET['mensaje'])) {
                         <table class="table table-striped table-bordered align-middle">
                             <thead class="table-dark">
                                 <tr>
-                                    <th scope="col">ID Clase</th>
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Capacidad</th>
                                     <th scope="col">Hora</th>
+                                    <th scope="col">Días</th>
                                     <th scope="col">Editar</th>
                                     <th scope="col">Eliminar</th>
                                 </tr>
@@ -157,10 +157,10 @@ if (isset($_GET['mensaje'])) {
                             <tbody>
                                 <?php foreach ($Clases as $clase): ?>
                                     <tr>
-                                        <td><?php echo htmlspecialchars($clase['Id_clase']); ?></td>
                                         <td><?php echo htmlspecialchars($clase['Nombre_clase']); ?></td>
                                         <td><?php echo htmlspecialchars($clase['Capacidad_clase']); ?></td>
                                         <td><?php echo htmlspecialchars($clase['Hora_clase']); ?></td>
+                                        <td><?php echo htmlspecialchars($clase['Dias_semana']); ?></td>
                                         <td>
                                             <!-- Botón para editar la clase -->
                                             <a href="editar-clase-monitor.php?Id_clase=<?php echo $clase['Id_clase']; ?>"

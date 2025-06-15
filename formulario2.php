@@ -7,13 +7,13 @@ session_start(); // Inicia la sesión
 $Correo = $_POST['correo'];
 $Contraseña = $_POST['contraseña'];
 // Seleccionamos los datos de la tabla usuarios donde el correo y la contraseña coincidan con los ingresados en el formulario
-$sql = "SELECT * FROM usuarios WHERE Correo='$Correo' AND Contraseña='$Contraseña'";
+$sql = "SELECT * FROM usuarios WHERE Correo='$Correo'";
 
 // Ejecuto la sentencia y guardo su resultado en una variable
 $resultado = $mysqli->query($sql);
 // Esta función devuelve un array asociativo, es decir, un array donde las claves son los nombres de las columnas de la tabla y los valores son los datos correspondientes de esa fila.
 $fila = $resultado->fetch_assoc();
-if ($fila) {
+if ($fila && password_verify($Contraseña, $fila['Contraseña'])) {
     // Si $fila tiene datos, significa que el usuario fue encontrado en la tabla usuarios
     $Id_usuario = $fila['Id_usuario']; // Guardamos el Id_usuario extraído de la fila en una variable local
     $_SESSION['Nombre'] = $fila['Nombre']; // Guardamos el nombre del usuario en la sesión para usarlo en otras páginas
@@ -61,11 +61,11 @@ if ($fila) {
     exit();
 } else {
     // Verificar en la tabla monitores por correo
-    $sql = "SELECT * FROM monitores WHERE Correo='$Correo' AND Contraseña='$Contraseña'";
+    $sql = "SELECT * FROM monitores WHERE Correo='$Correo'";
     $resultado = $mysqli->query($sql);
     $fila_monitor = $resultado->fetch_assoc();
 
-    if ($fila_monitor) {
+    if ($fila_monitor && password_verify($Contraseña, $fila_monitor['Contraseña'])) {
         // Guarda el nombre del monitor en una variable de sesión
         $_SESSION['Nombre'] = $fila_monitor['Nombre'];
         // Guarda el id del monitor en la sesión

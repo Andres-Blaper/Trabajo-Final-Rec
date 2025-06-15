@@ -46,12 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $toastMsg = 'Ya existe un usuario con ese nombre y apellido.';
         // Se podria perfectamente hacer simplemente con un elseif, sin necesidad de esta comprobación ($nombre && $apellido && $contrasena && $correo), esto evita que esos campos esten vacíos, aunque esto ya lo evita el required, se podria quitar perfectamente.
     } elseif ($nombre && $apellido && $contrasena && $correo) {
+         // Cifrar la contraseña antes de guardar
+        $hash = password_hash($contrasena, PASSWORD_DEFAULT);
         // Hacemos una sentencia SQL para insertar valores en la tabla usuarios.
         $sql = "INSERT INTO usuarios (Nombre, Apellido, Contraseña, Correo) VALUES (?, ?, ?, ?)";
         // Preparamos la sentencia SQL.
         $stmt = $mysqli->prepare($sql);
         // Vinculamos los parámetros a la sentencia preparada, ssss son 4 strings.
-        $stmt->bind_param("ssss", $nombre, $apellido, $contrasena, $correo);
+        $stmt->bind_param("ssss", $nombre, $apellido, $hash, $correo);
         // Ejecutamos la sentencia, y dependiendo del resultado, mostramos un toast de éxito o de error.
         if ($stmt->execute()) {
             $toast = true;

@@ -14,10 +14,12 @@ $Id_usuario = $_SESSION['Id_usuario'];
 require 'conexion.php'; // Incluimos la conexión a la base de datos
 
 // --- OBTENER LAS CLASES EN LAS QUE ESTÁ INSCRITO EL USUARIO ---
-// Consulta SQL para obtener las clases en las que el usuario está inscrito, necesitamos unir entre las tablas 'clases' e 'inscripciones con un join para obtener los datos de la tabla inscripcion que tenga el id del usuario'
-$sql = "SELECT c.Id_clase, c.Nombre_clase, c.Capacidad_clase, c.Hora_clase, c.Id_monitor
+// Consulta SQL para obtener las clases en las que el usuario está inscrito, necesitamos unir entre las tablas 'clases' e 'inscripciones', junto con 'monitores' con un join para obtener los datos de la tabla inscripcion que tenga el id del usuario',
+//  el AS Nombre_monitor permite distinguir el nombre del monitor en el resultado ya que hay varios 'Nombre' (el nombre del monitor y el nombre del usuario), y así evitamos confusiones.
+$sql = "SELECT c.Id_clase, c.Nombre_clase, c.Capacidad_clase, c.Hora_clase, c.Dias_semana, m.Nombre AS Nombre_monitor
         FROM clases c
         INNER JOIN inscripciones i ON c.Id_clase = i.Id_clase
+        INNER JOIN monitores m ON c.Id_monitor = m.Id_monitor
         WHERE i.Id_usuario = ?";
 $stmt = $mysqli->prepare($sql);
 $stmt->bind_param("i", $Id_usuario); // Pasamos el id del usuario a la consulta
@@ -175,11 +177,11 @@ if (isset($_GET['mensaje'])) {
                     <table class="table table-striped table-bordered align-middle">
                         <thead class="table-dark">
                             <tr>
-                                <th scope="col">ID Clase</th>
                                 <th scope="col">Nombre</th>
                                 <th scope="col">Capacidad</th>
                                 <th scope="col">Hora</th>
-                                <th scope="col">ID Monitor</th>
+                                <th scope="col">Días</th>
+                                <th scope="col">Monitor</th>
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
@@ -187,11 +189,11 @@ if (isset($_GET['mensaje'])) {
                             <?php foreach ($Clases as $clase): ?>
                                 <!-- Recorremos cada clase en la que está inscrito el usuario -->
                                 <tr>
-                                    <td><?php echo htmlspecialchars($clase['Id_clase']); // ID de la clase ?></td>
                                     <td><?php echo htmlspecialchars($clase['Nombre_clase']); // Nombre de la clase ?></td>
                                     <td><?php echo htmlspecialchars($clase['Capacidad_clase']); // Capacidad de la clase ?></td>
                                     <td><?php echo htmlspecialchars($clase['Hora_clase']); ?></td>
-                                    <td><?php echo htmlspecialchars($clase['Id_monitor']); // ID del monitor ?></td>
+                                    <td><?php echo htmlspecialchars($clase['Dias_semana']); ?></td>
+                                    <td><?php echo htmlspecialchars($clase['Nombre_monitor']); // Nombre del monitor ?></td>
                                     <td>
                                         <!-- Botón para desapuntarse de la clase (elimina la inscripción, no la clase. Y solo la seleccionada dentro del foreach, no todas a las que está inscrita) -->
                                         <a href="eliminar-clase-usuario.php?Id_clase=<?php echo $clase['Id_clase']; ?>" 

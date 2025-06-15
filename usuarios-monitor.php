@@ -103,13 +103,7 @@ while ($fila = $result->fetch_assoc()) {
                                     <td><?php echo htmlspecialchars($usuario['Nombre']); ?></td>
                                     <td><?php echo htmlspecialchars($usuario['Apellido']); ?></td>
                                     <td>
-                                        <!-- Esto es para mostrar/ocultar las contraseñas -->
-                                        <div class="input-group">
-                                            <input type="password" class="form-control form-control-sm border-0 bg-transparent p-0" style="width:auto;display:inline;" value="<?php echo htmlspecialchars($usuario['Contraseña']); ?>" readonly>
-                                            <button type="button" class="btn btn-link btn-sm px-1 toggle-pass" tabindex="-1">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                        </div>
+                                        <span>••••••</span>
                                     </td>
                                     <td><?php echo htmlspecialchars($usuario['Correo']); ?></td>
                                     <td>

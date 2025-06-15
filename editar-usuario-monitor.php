@@ -18,8 +18,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasena = trim($_POST['contrasena']);
     $correo = trim($_POST['correo']);
 
-    $stmt = $mysqli->prepare("UPDATE usuarios SET Nombre = ?, Apellido = ?, Contraseña = ?, Correo = ? WHERE Id_usuario = ?");
-    $stmt->bind_param("ssssi", $nombre, $apellido, $contrasena, $correo, $Id_usuario);
+    #Con esto nos aseguramos de actualizar la contraseña solo si se ha proporcionado una nueva.
+    if (!empty($contrasena)) {
+        // Solo actualiza la contraseña si se ha escrito algo
+        $hash = password_hash($contrasena, PASSWORD_DEFAULT);
+        $stmt = $mysqli->prepare("UPDATE usuarios SET Nombre = ?, Apellido = ?, Contraseña = ?, Correo = ? WHERE Id_usuario = ?");
+        $stmt->bind_param("ssssi", $nombre, $apellido, $hash, $correo, $Id_usuario);
+    } else {
+        // No cambia la contraseña
+        $stmt = $mysqli->prepare("UPDATE usuarios SET Nombre = ?, Apellido = ?, Correo = ? WHERE Id_usuario = ?");
+        $stmt->bind_param("sssi", $nombre, $apellido, $correo, $Id_usuario);
+    }
     if ($stmt->execute()) {
         $toast = "Usuario actualizado correctamente.";
         $toast_type = "success";
@@ -47,6 +56,7 @@ if (!$usuario) {
     <meta charset="UTF-8">
     <title>Editar Usuario</title>
     <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="icon" type="image/png" href="peso.png">
     <style>
         body { background: #ede9fe; min-height: 100vh; }
         .form-container { max-width: 400px; margin: 60px auto; background: #fff; border-radius: 1.5rem; box-shadow: 0 8px 32px rgba(161, 22, 253, 0.13); padding: 2.5rem 2rem 2rem 2rem; }
@@ -76,7 +86,7 @@ if (!$usuario) {
             </div>
             <div class="mb-3">
                 <label for="contrasena" class="form-label">Contraseña</label>
-                <input type="text" class="form-control" id="contrasena" name="contrasena" value="<?php echo htmlspecialchars($usuario['Contraseña']); ?>" minlength="5" required>
+                <input type="password" class="form-control" id="contrasena" name="contrasena" placeholder="Dejar en blanco para no cambiar" minlength="5">
             </div>
             <button type="submit" class="btn btn-purple w-100">Actualizar Datos</button>
             <a href="usuarios-monitor.php" class="btn btn-secondary w-100 mt-2">Volver</a>

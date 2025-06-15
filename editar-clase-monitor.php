@@ -25,23 +25,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Recoge los datos del formulario usando $_POST.
     $nombre = $_POST['nombreClase'];
     $capacidad = $_POST['capacidadClase'];
+    $hora = $_POST['horaClase'];
+    $dias_semana = isset($_POST['dias_semana']) ? implode(', ', $_POST['dias_semana']) : '';
     // Prepara la consulta para acutalizar los datos en la tabla clases.
-    $stmt = $mysqli->prepare("UPDATE clases SET Nombre_clase = ?, Capacidad_clase = ? WHERE Id_clase = ?");
-    // / Asocia los parámetros a la consulta preparada.
-    // "sii" indica que se van a pasar: un string ($nombre), y dos enteros ($capacidad, $Id_clase).
-    $stmt->bind_param("sii", $nombre, $capacidad, $Id_clase);
-    // Se ejectua la consulta.
-    if ($stmt->execute()) {
-        $toast = "Clase actualizada correctamente.";
-        $toast_type = "success";
-    } else {
-        $toast = "Error al actualizar la clase.";
+    if (empty($dias_semana)) {
+        $toast = "Debes seleccionar al menos un día de la semana.";
         $toast_type = "danger";
+    } else {
+        $stmt = $mysqli->prepare("UPDATE clases SET Nombre_clase = ?, Capacidad_clase = ?, Hora_clase = ?, Dias_semana = ? WHERE Id_clase = ?");
+        $stmt->bind_param("sissi", $nombre, $capacidad, $hora, $dias_semana, $Id_clase);
+        if ($stmt->execute()) {
+            $toast = "Clase actualizada correctamente.";
+            $toast_type = "success";
+        } else {
+            $toast = "Error al actualizar la clase.";
+            $toast_type = "danger";
+        }
     }
 }
 
 // Consulta la base de datos para obtener los datos actualizados de la clase
-$stmt = $mysqli->prepare("SELECT Id_clase, Nombre_clase, Capacidad_clase, Id_monitor FROM clases WHERE Id_clase = ?");
+$stmt = $mysqli->prepare("SELECT Id_clase, Nombre_clase, Capacidad_clase, Id_monitor, Hora_clase, Dias_semana FROM clases WHERE Id_clase = ?");
 $stmt->bind_param("i", $Id_clase);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -61,6 +65,7 @@ if (!$clase) {
     <meta charset="UTF-8">
     <title>Editar Clase</title>
     <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="icon" type="image/png" href="peso.png">
     <style>
         body {
             background: #f3f0ff;
@@ -85,7 +90,7 @@ if (!$clase) {
         }
         .form-label {
             font-size: 1.2rem;
-            margin-top: 1rem;
+            margin-top: 0.3rem;
         }
         .form-control:focus {
             border-color: #a116fd;
@@ -97,10 +102,7 @@ if (!$clase) {
     <div class="form-container">
         <h1 class="text-center mb-4">Editar Clase</h1>
         <form method="post">
-            <div class="mb-3">
-                <label for="idClase" class="form-label">ID de la Clase</label>
-                <input type="text" class="form-control" id="idClase" value="<?php echo htmlspecialchars($clase['Id_clase']); ?>" readonly>
-            </div>
+            <input type="hidden" name="idClase" value="<?php echo htmlspecialchars($clase['Id_clase']); ?>">
             <div class="mb-3">
                 <label for="nombreClase" class="form-label">Nombre de la Clase</label>
                 <input type="text" class="form-control" id="nombreClase" name="nombreClase" value="<?php echo htmlspecialchars($clase['Nombre_clase']); ?>" required>
@@ -111,10 +113,28 @@ if (!$clase) {
                 <input type="number" class="form-control" id="capacidadClase" name="capacidadClase"
                     value="<?php echo htmlspecialchars($clase['Capacidad_clase']); ?>" required min="1" max="20">
             </div>
-            <div class="mb-4">
-                <label for="idMonitor" class="form-label">ID del Monitor</label>
-                <input type="text" class="form-control" id="idMonitor" value="<?php echo htmlspecialchars($clase['Id_monitor']); ?>" readonly>
+                <div class="mb-3">
+                    <label for="horaClase" class="form-label">Hora de la Clase</label>
+                    <input type="time" class="form-control" id="horaClase" name="horaClase"
+                        value="<?php echo substr(htmlspecialchars($clase['Hora_clase']), 0, 5); ?>" required step="60">
+                </div>
+            <div class="mb-3">
+                <label class="form-label">Días de la semana</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <?php
+                    $dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                    $dias_guardados = explode(', ', $clase['Dias_semana']);
+                    foreach ($dias as $dia): ?>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="dias_semana[]" value="<?php echo $dia; ?>"
+                                id="dia_<?php echo $dia; ?>"
+                                <?php if (in_array($dia, $dias_guardados)) echo 'checked'; ?>>
+                            <label class="form-check-label" for="dia_<?php echo $dia; ?>"><?php echo $dia; ?></label>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
+            <input type="hidden" name="idMonitor" value="<?php echo htmlspecialchars($clase['Id_monitor']); ?>">
             <button type="submit" class="btn btn-purple w-100 mb-2">Actualizar Datos</button>
             <a href="clases-monitor.php" class="btn btn-secondary w-100">Volver</a>
         </form>

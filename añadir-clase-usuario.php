@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['Id_clase'])) {
 }
 
 // Obtener las clases en las que NO está inscrito el usuario
-$sql = "SELECT Id_clase, Nombre_clase FROM clases 
+$sql = "SELECT Id_clase, Nombre_clase, Hora_clase, Dias_semana FROM clases 
         WHERE Id_clase NOT IN (
             SELECT Id_clase FROM inscripciones WHERE Id_usuario = ?
         )";
@@ -153,7 +153,7 @@ $result = $stmt->get_result();
                         <option value="" disabled selected>Elige una clase</option>
                         <?php while ($clase = $result->fetch_assoc()): ?>
                             <option value="<?php echo $clase['Id_clase']; ?>">
-                                <?php echo htmlspecialchars($clase['Nombre_clase']); ?>
+                                <?php echo htmlspecialchars($clase['Nombre_clase'] . " -> " . substr($clase['Hora_clase'], 0, 5) . " -> " . $clase['Dias_semana']); ?>
                             </option>
                         <?php endwhile; ?>
                     </select>

@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $capacidad = intval($_POST['capacidad']);
     $id_monitor = intval($_POST['id_monitor']);
     $hora_clase = $_POST['hora_clase']; // Recoge la hora
+    $dias_semana = isset($_POST['dias_semana']) ? implode(', ', $_POST['dias_semana']) : '';
 
     // Comprobar si ya existe una clase con ese nombre
     $sql_check = "SELECT COUNT(*) as total FROM clases WHERE Nombre_clase = ?";
@@ -35,11 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $toastClass = 'bg-danger text-white';
         $toastMsg = 'Ya existe una clase con ese nombre.';
         // Si el nombre no está vacío, la capacidad está entre 1 y 20, y el id del monitor es válido..
-    } elseif ($nombre && $capacidad >= 1 && $capacidad <= 20 && $id_monitor > 0 && $hora_clase) {
+    } elseif ($nombre && $capacidad >= 1 && $capacidad <= 20 && $id_monitor > 0 && $hora_clase && $dias_semana) {
         // Inserta la nueva clase en la base de datos y muestra un toast de éxito.
-        $sql = "INSERT INTO clases (Nombre_clase, Capacidad_clase, Id_monitor, Hora_clase) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO clases (Nombre_clase, Capacidad_clase, Id_monitor, Hora_clase, Dias_semana) VALUES (?, ?, ?, ?, ?)";
         $stmt = $mysqli->prepare($sql);
-        $stmt->bind_param("siis", $nombre, $capacidad, $id_monitor, $hora_clase);
+        $stmt->bind_param("siiss", $nombre, $capacidad, $id_monitor, $hora_clase, $dias_semana);
         if ($stmt->execute()) {
             $toast = true;
             $toastClass = 'bg-success text-white';
@@ -115,10 +116,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="hora_clase" class="form-label">Hora de la Clase</label>
                 <input type="time" class="form-control" id="hora_clase" name="hora_clase" required>
             </div>
+                <!-- Con esto, no se podrá modificar el campo ni se mostrará y además se autocompletará con el valor del ID del monitor con el que ha iniciado sesion -->
+                <input type="hidden" name="id_monitor" value="<?php echo $_SESSION['Id_monitor']; ?>">
             <div class="mb-3">
-                <label for="id_monitor" class="form-label">ID del Monitor</label>
-                <!-- Con esto, no se podrá modificar el campo y además se autocompletará con el valor del ID del monitor con el que ha iniciado sesion -->
-                <input type="number" class="form-control" id="id_monitor" name="id_monitor" value="<?php echo $_SESSION['Id_monitor']; ?>" readonly>
+                <label class="form-label">Días de la semana</label>
+                <div class="d-flex flex-wrap gap-2">
+                <?php
+                $dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                foreach ($dias as $dia): ?>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="dias_semana[]" value="<?php echo $dia; ?>" id="dia_<?php echo $dia; ?>">
+                        <label class="form-check-label" for="dia_<?php echo $dia; ?>"><?php echo $dia; ?></label>
+                    </div>
+                <?php endforeach; ?>
+                </div>
             </div>
             <button type="submit" class="btn btn-purple w-100">Crear Clase</button>
             <a href="clases-monitor.php" class="btn btn-secondary w-100 mt-2">Volver</a>

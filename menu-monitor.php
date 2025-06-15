@@ -151,7 +151,7 @@ $num_inscripciones = $res_inscripciones ? $res_inscripciones->fetch_assoc()['tot
             <a href="cerrarsesion.php" class="btn btn-light text-dark logout-btn mt-auto">Cerrar sesión</a>
         </div>
         <!-- Contenido principal con tarjetas resumen -->
-        <div class="col-12 col-md-8 col-lg-9 p-4 d-flex align-items-center justify-content-center">
+        <div class="col-12 col-md-8 col-lg p-4 d-flex align-items-center justify-content-center">
             <div class="row w-100 justify-content-center dashboard-cards gx-3 gy-3">
                 <!-- Tarjeta Clases -->
                 <div class="col-12 col-lg-6 col-xl-4 col-xxl-2 d-flex justify-content-center">
